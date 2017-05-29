@@ -17,8 +17,9 @@ public class P3SearchKeyWord {
 		P3SearchKeyWord.phraseList = phraseList;
 
 		for(Phrase phrase : phraseList){
-			String text = phrase.getPhraseText();
-			if(text.contains(target)){
+			//String text = phrase.getPhraseText();
+			String changeTargetForm = ChangePhraseForm.changePhraseForm(phrase, 1);
+			if(changeTargetForm.equals(target)){
 				targetDependencyIndex = phrase.getDependencyIndex();
 				effectId = getEffectId(targetDependencyIndex, effect);
 				if(effectId == -1){ continue; }
@@ -35,12 +36,20 @@ public class P3SearchKeyWord {
 		int effectId = -1;
 
 		for(Phrase phrase : phraseList){
-			String text = phrase.getPhraseText();
+			//String text = phrase.getPhraseText();
 			int phraseId = phrase.getId();
-			if(phraseId == targetDependencyIndex && text.contains(effect)){
-				effectId = phraseId;
-				break;
+//			if(phraseId == targetDependencyIndex && text.contains(effect)){
+//				effectId = phraseId;
+//				break;
+//			}
+			if(phraseId == targetDependencyIndex){
+				String changeEffectForm = ChangePhraseForm.changePhraseForm(phrase, 2);
+				if(changeEffectForm.equals(effect)){
+					effectId = phraseId;
+					break;
+				}
 			}
+			
 		}
 		return effectId;
 	}

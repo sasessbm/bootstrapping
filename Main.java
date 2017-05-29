@@ -10,18 +10,23 @@ import makeTriplicity.*;
 
 public class Main {
 
-	public static void main(String[] args) {
-		// TODO 自動生成されたメソッド・スタブ
+	public static void main(String[] args) throws Exception {
+		
+		ArrayList<String> sentenceList = GetSentence.getSentenceList(0, 1000);
+		ArrayList<TripleSet> tripleSetList = makeTriplicity.Main.run(0, 1000);
+		ArrayList<String> keyWordList = new ArrayList<String>();
+		for(TripleSet tripleSet : tripleSetList){
+			String target = tripleSet.getTargetElement().getText();
+			String effect = tripleSet.getEffectElement().getText();
+			keyWordList.addAll(GetKeyWordList.getKeyWordList(sentenceList, target, effect));
+		}
+		
+		for(String keyWord : keyWordList){
+			System.out.println(keyWord);
+		}
 
 	}
 	
-	public static void run(ArrayList<String> sentenceList, String target, String effect) throws SAXException, IOException, ParserConfigurationException{
-		
-		for(String sentence : sentenceList){
-			GetKeyWord.getKeyWord(sentence, target, effect);
-		}
-		
-		
-	}
+	
 
 }
