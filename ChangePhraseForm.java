@@ -1,5 +1,6 @@
 package bootstrapping;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import makeTriplicity.*;
 
@@ -9,11 +10,11 @@ public class ChangePhraseForm {
 		// TODO 自動生成されたメソッド・スタブ
 
 	}
-	
-	public static String changePhraseForm(Phrase phrase, int phraseType){
+
+	public static String changePhraseForm(ArrayList<Morpheme> morphemeList, int phraseType){
 
 		//Element element = new Element();
-		ArrayList<Morpheme> morphemeList = phrase.getMorphemeList();
+		//ArrayList<Morpheme> morphemeList = phrase.getMorphemeList();
 		String text = "";
 		ArrayList<Morpheme> elementMorphemeList = new ArrayList<Morpheme>();
 		//int denialIndex = 0;
@@ -65,7 +66,7 @@ public class ChangePhraseForm {
 		//			text += "ない";
 		//			//elementMorphemeList.add(morpheme);
 		//		}
-		
+
 		//phrase.setPhraseText(text);
 		//phrase.setMorphemeList(elementMorphemeList);
 
