@@ -1,6 +1,8 @@
 package bootstrapping;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import makeTriplicity.*;
 
@@ -13,20 +15,9 @@ public class ChangePhraseForm {
 
 	public static String changePhraseForm(ArrayList<Morpheme> morphemeList, int phraseType){
 
-		//Element element = new Element();
-		//ArrayList<Morpheme> morphemeList = phrase.getMorphemeList();
 		String text = "";
 		ArrayList<Morpheme> elementMorphemeList = new ArrayList<Morpheme>();
-		//int denialIndex = 0;
 		boolean isVerb = false;
-
-
-		//		for(Morpheme morpheme : morphemeList){
-		//			//System.out.println(morpheme.getMorphemeText());
-		//			if(morpheme.getOriginalForm().equals("ない")){
-		//				denialIndex ++;
-		//			}
-		//		}
 
 		for(Morpheme morpheme : morphemeList){
 
@@ -66,12 +57,23 @@ public class ChangePhraseForm {
 		//			text += "ない";
 		//			//elementMorphemeList.add(morpheme);
 		//		}
+		
+		text = deleteParentheses(text);
+		
+		return text;
+	}
+	
+	public static String deleteParentheses(String text){
 
-		//phrase.setPhraseText(text);
-		//phrase.setMorphemeList(elementMorphemeList);
+		String regex = "\\(|\\)|\\（|\\）|「|」|『|』";
+		Pattern p = Pattern.compile(regex);
+		Matcher matcher = p.matcher(text);
 
-		//element.setMorphemeList(elementMorphemeList);
-
+		while(matcher.find()){
+			String matchstr = matcher.group();
+			text = PostProcessing.deleteCharacter(text, matchstr);
+			//System.out.println(targetText);
+		}
 		return text;
 	}
 

@@ -8,11 +8,11 @@ import makeTriplicity.Phrase;
 
 public class SearchKeyWord {
 
-	public static ArrayList<String> getKeyWordList
-	(ArrayList<Phrase> phraseList, String target, String effect, int patternType){
+	public static ArrayList<Integer> getKeyWordIdList
+	(ArrayList<String> medicineNameList, ArrayList<Phrase> phraseList, String target, String effect, int patternType){
 
-		ArrayList<String> keyWordList = new ArrayList<String>(); 
-		String keyWord = "";
+		ArrayList<Integer> keyWordIdList = new ArrayList<Integer>(); 
+		int keyWordId = -1;
 		int targetDependencyIndex = -1;
 		int effectId = -1;
 		int searchIndex = phraseList.size() - 1;
@@ -43,30 +43,21 @@ public class SearchKeyWord {
 				case 3:
 					effectId = P3Search.getEffectId(targetDependencyIndex, effect, phraseList);
 					if(effectId == -1){ continue; }
-					keyWord = P3Search.getKeyWord(effectId, phraseList);
+					keyWordId = P3Search.getKeyWordId(effectId, phraseList, medicineNameList);
 					break;
 
 				case 4:
 					effectId = P4Search.getEffectId(targetDependencyIndex, effect, phraseList);
 					if(effectId == -1){ continue; }
-					keyWord = P4Search.getKeyWord(effectId, phraseList);
+					keyWordId = P4Search.getKeyWordId(effectId, phraseList, medicineNameList);
 					break;
 				}
-
-//				if(patternType == 3){
-//					effectId = P3Search.getEffectId(targetDependencyIndex, effect);
-//					if(effectId == -1){ continue; }
-//					keyWord = P3Search.getKeyWord(effectId);
-//				}else if(patternType == 4){
-//					effectId = P4Search.getEffectId(targetDependencyIndex, effect);
-//					if(effectId == -1){ continue; }
-//					keyWord = P4Search.getKeyWord(effectId);
-//				}
-
-				keyWordList.add(keyWord);
+				
+				if(keyWordId == -1 || phraseId == keyWordId){ continue; }
+				keyWordIdList.add(keyWordId);
 			}
 		}
-		return keyWordList;
+		return keyWordIdList;
 	}
 
 }

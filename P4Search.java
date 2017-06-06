@@ -26,34 +26,35 @@ public class P4Search {
 		return effectId;
 	}
 
-	public static String getKeyWord(int effectId, ArrayList<Phrase> phraseList){
+	public static int getKeyWordId(int effectId, ArrayList<Phrase> phraseList, ArrayList<String> medicineNameList){
 
 		int keyWordId = -1;
 		boolean isKeyWordPhrase = false;
-		String keyWord = "";
+		//String keyWord = "";
 
 		for(Phrase phrase : phraseList){
 			int dependencyIndex = phrase.getDependencyIndex();
 			if(dependencyIndex == effectId){
 				keyWordId = phrase.getId();
-				isKeyWordPhrase = judgeKeyWordPhrase(keyWordId, phraseList);
+				isKeyWordPhrase = judgeKeyWordPhrase(keyWordId, phraseList ,medicineNameList);
 				if(isKeyWordPhrase){
 					//keyWord = phrase.getMorphemeList().get(0).getMorphemeText();
 					//keyWord = phrase.getMorphemeList().get(0).getOriginalForm();
-					keyWord = phrase.getPhraseText();
+					//keyWord = phrase.getPhraseText();
 					break;
 				}
 			}
+			keyWordId = -1;
 		}
-		return keyWord;
+		return keyWordId;
 	}
 	
-	public static boolean judgeKeyWordPhrase(int keyWordId, ArrayList<Phrase> phraseList){
+	public static boolean judgeKeyWordPhrase(int keyWordId, ArrayList<Phrase> phraseList, ArrayList<String> medicineNameList){
 		
 		for(Phrase phrase : phraseList){
 			String text = phrase.getPhraseText();
 			int dependencyIndex = phrase.getDependencyIndex();
-			if(dependencyIndex == keyWordId && text.contains(MEDICINE)){
+			if(dependencyIndex == keyWordId && P3Search.judgeKeyWordPhrase(text, medicineNameList)){
 				return true;
 			}
 		}

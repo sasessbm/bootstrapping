@@ -25,20 +25,32 @@ public class P3Search {
 		return effectId;
 	}
 
-	public static String getKeyWord(int effectId, ArrayList<Phrase> phraseList){
+	public static int getKeyWordId(int effectId, ArrayList<Phrase> phraseList, ArrayList<String> medicineNameList){
 
-		String keyWord = "";
+		//String keyWord = "";
+		int keyWordId = -1;
 		for(Phrase phrase : phraseList){
 			String text = phrase.getPhraseText();
 			int dependencyIndex = phrase.getDependencyIndex();
 
-			if(dependencyIndex == effectId && text.contains(MEDICINE)){
+			if(dependencyIndex == effectId && judgeKeyWordPhrase(text, medicineNameList)){
 				//keyWord = phrase.getMorphemeList().get(1).getMorphemeText();
 				//keyWord = phrase.getMorphemeList().get(1).getOriginalForm();
-				keyWord = phrase.getPhraseText();
+				//keyWord = phrase.getPhraseText();
+				keyWordId = phrase.getId();
 			}
 		}
-		return keyWord;
+		return keyWordId;
+	}
+	
+	public static boolean judgeKeyWordPhrase(String text, ArrayList<String> medicineNameList){
+		
+		for(String medicineName : medicineNameList){
+			if(text.contains(medicineName)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

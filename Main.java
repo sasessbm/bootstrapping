@@ -9,6 +9,9 @@ import org.xml.sax.SAXException;
 import makeTriplicity.*;
 
 public class Main {
+	
+	private static ArrayList<String> medicineNameList 
+	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\リスト\\medicine_name.txt");
 
 	public static void main(String[] args) throws Exception {
 		
@@ -49,7 +52,7 @@ public class Main {
 		for(TripleSet tripleSet : tripleSetList){
 			String target = tripleSet.getTargetElement().getText();
 			String effect = tripleSet.getEffectElement().getText();
-			keyWordList.addAll(GetKeyWordList.getKeyWordList(sentenceList, target, effect));
+			keyWordList.addAll(GetKeyWordList.getKeyWordList(medicineNameList, sentenceList, target, effect));
 		}
 		
 		for(String keyWord : keyWordList){
