@@ -17,7 +17,6 @@ public class SearchKeyWord {
 		int effectId = -1;
 		int searchIndex = phraseList.size() - 1;
 		int phraseId = 0;
-		//P3Search.phraseList = phraseList;
 		Phrase phrase = phraseList.get(searchIndex);
 		ArrayList<Morpheme> morphemeList = phrase.getMorphemeList();
 		
@@ -33,7 +32,6 @@ public class SearchKeyWord {
 				morphemeList = phrase.getMorphemeList();
 				if(!morphemeList.get(morphemeList.size()-1).getMorphemeText().equals("の")){ break; }
 			}
-			
 			Collections.reverse(targetMorphemeList);
 			String targetForm = ChangePhraseForm.changePhraseForm(targetMorphemeList, 1);
 			if(targetForm.contains(target)){
@@ -45,7 +43,6 @@ public class SearchKeyWord {
 					if(effectId == -1){ continue; }
 					keyWordId = P3Search.getKeyWordId(effectId, phraseList, medicineNameList);
 					break;
-
 				case 4:
 					effectId = P4Search.getEffectId(targetDependencyIndex, effect, phraseList);
 					if(effectId == -1){ continue; }

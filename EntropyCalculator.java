@@ -2,7 +2,7 @@ package bootstrapping;
 
 import java.util.ArrayList;
 
-public class CalculateEntropy {
+public class EntropyCalculator {
 
 	public static void main(String[] args) {
 		//double ans = caluculateCooccurrenceProbability(2,3);
@@ -36,7 +36,7 @@ public class CalculateEntropy {
 			cooccurrenceProbability = caluculateCooccurrenceProbability(candidateCooccurrenceNum, candidateTotalNum);
 			informationContent = caluculateInformationContent(cooccurrenceProbability);
 			entropy += informationContent;
-			System.out.println(entropy);
+			//System.out.println(entropy);
 		}
 		
 		return -entropy;

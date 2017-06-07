@@ -44,20 +44,51 @@ public class Main {
 		idList.add(482);
 		idList.add(485);
 		
-		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(500, 1000);
-		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList);
-		
-		ArrayList<String> keyWordList = new ArrayList<String>();
+		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(500, 1000);
+		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList);
+		ArrayList<String> keyWordTextList = new ArrayList<String>();
+		ArrayList<DoubleSet> doubleSetList = new ArrayList<DoubleSet>();
 		
 		for(TripleSet tripleSet : tripleSetList){
+			ArrayList<KeyWord> keyWordList = new ArrayList<KeyWord>();
 			String target = tripleSet.getTargetElement().getText();
 			String effect = tripleSet.getEffectElement().getText();
-			keyWordList.addAll(GetKeyWordList.getKeyWordList(medicineNameList, sentenceList, target, effect));
+			keyWordList = GetKeyWordList.getKeyWordList(medicineNameList, sentenceList, target, effect);
+			if(keyWordList.size() == 0){ continue; }
+			
+			for(KeyWord keyWord : keyWordList){
+				keyWordTextList.add(keyWord.getKeyWordText());
+				System.out.println(keyWord.getKeyWordText());
+			}
+			
+			DoubleSet doubleSet = new DoubleSet(target, effect, keyWordList);
+			doubleSetList.add(doubleSet);
 		}
 		
-		for(String keyWord : keyWordList){
-			System.out.println(keyWord);
+		//手がかり語のエントロピー計算
+		for(String keyWordText : keyWordTextList){
+			
+			double entropy = 0;
+			int keyWordTextAllNum = 0;
+			int keyWordTextNum = 0;
+			ArrayList<Integer> keyWordNumList = new ArrayList<Integer>();
+			
+			for(DoubleSet doubleSet : doubleSetList){
+				keyWordTextNum = doubleSet.getKeyWordNum(keyWordText);
+				keyWordNumList.add(keyWordTextNum);
+				keyWordTextAllNum += keyWordTextNum;
+			}
+			
+			entropy = EntropyCalculator.caluculateEntropy(keyWordNumList, keyWordTextAllNum);
+			System.out.println(keyWordText + "　→　" + entropy);
+			
 		}
+		
+		
+		
+//		for(String keyWordText : keyWordTextList){
+//			System.out.println(keyWordText);
+//		}
 
 	}
 	
