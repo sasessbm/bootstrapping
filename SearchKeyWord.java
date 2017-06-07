@@ -36,7 +36,7 @@ public class SearchKeyWord {
 			
 			Collections.reverse(targetMorphemeList);
 			String targetForm = ChangePhraseForm.changePhraseForm(targetMorphemeList, 1);
-			if(targetForm.equals(target)){
+			if(targetForm.contains(target)){
 				targetDependencyIndex = phraseList.get(phraseId).getDependencyIndex();
 
 				switch(patternType){

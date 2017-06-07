@@ -17,7 +17,7 @@ public class P4Search {
 			int phraseId = phrase.getId();
 			if(phraseId == targetDependencyIndex){
 				String changeEffectForm = ChangePhraseForm.changePhraseForm(phrase.getMorphemeList(), 2);
-				if(changeEffectForm.equals(effect)){
+				if(changeEffectForm.contains(effect)){
 					effectId = phraseId;
 					break;
 				}

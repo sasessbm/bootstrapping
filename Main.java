@@ -44,8 +44,8 @@ public class Main {
 		idList.add(482);
 		idList.add(485);
 		
-		//ArrayList<String> sentenceList = GetSentence.getSentenceList(0, 500);
-		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList);
+		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(500, 1000);
+		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList);
 		
 		ArrayList<String> keyWordList = new ArrayList<String>();
 		

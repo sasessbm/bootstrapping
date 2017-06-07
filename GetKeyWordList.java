@@ -31,10 +31,11 @@ public class GetKeyWordList {
 														throws SAXException, IOException, ParserConfigurationException{
 
 		ArrayList<String> keyWordList = new ArrayList<String>();
-		
 
 		for(Sentence sentence : sentenceList){
-			ArrayList<Integer> keyWordIdList = new ArrayList<Integer>();
+			ArrayList<Integer> P3keyWordIdList = new ArrayList<Integer>();
+			ArrayList<Integer> P4keyWordIdList = new ArrayList<Integer>();
+			
 			String sentenceText = sentence.getText();
 			
 			//構文解析結果をXml形式で取得
@@ -47,16 +48,37 @@ public class GetKeyWordList {
 			//薬剤名を戻す
 			phraseList = PostProcessing.restoreMedicineName(phraseList, sentence.getMedecineNameMap());
 			
-			keyWordIdList.addAll(SearchKeyWord.getKeyWordIdList(medicineNameList, phraseList, target, effect, 3));
-			keyWordIdList.addAll(SearchKeyWord.getKeyWordIdList(medicineNameList, phraseList, target, effect, 4));
+			P3keyWordIdList.addAll(SearchKeyWord.getKeyWordIdList(medicineNameList, phraseList, target, effect, 3));
+			P4keyWordIdList.addAll(SearchKeyWord.getKeyWordIdList(medicineNameList, phraseList, target, effect, 4));
 			
-			if(keyWordIdList.size() == 0){ continue; }
-			
-			for(int id : keyWordIdList){
-				keyWordList.add(phraseList.get(id).getPhraseText());
+			if(P3keyWordIdList.size() != 0){ 
+				for(int id : P3keyWordIdList){
+					Morpheme morpheme = phraseList.get(id).getMorphemeList().get(1);
+					if(!morpheme.getOriginalForm().equals("*")){
+						keyWordList.add(morpheme.getOriginalForm());
+						System.out.println(morpheme.getOriginalForm());
+					}else{
+						keyWordList.add(morpheme.getMorphemeText());
+						System.out.println(morpheme.getMorphemeText());
+					}
+					
+				}
 			}
 			
-//			System.out.println(id);
+			if(P4keyWordIdList.size() != 0){
+				for(int id : P4keyWordIdList){
+					Morpheme morpheme = phraseList.get(id).getMorphemeList().get(0);
+					if(!morpheme.getOriginalForm().equals("*")){
+						keyWordList.add(morpheme.getOriginalForm());
+						System.out.println(morpheme.getOriginalForm());
+					}else{
+						keyWordList.add(morpheme.getMorphemeText());
+						System.out.println(morpheme.getMorphemeText());
+					}
+				}
+			}
+			
+			System.out.println(sentence.getId());
 		}
 		return keyWordList;
 	}
