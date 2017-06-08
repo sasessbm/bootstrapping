@@ -53,7 +53,7 @@ public class GetKeyWordList {
 			//手がかり語リストに追加
 			keyWordList = addKeyWord(keyWordList, P3keyWordIdList, phraseList, 1);
 			keyWordList = addKeyWord(keyWordList, P4keyWordIdList, phraseList, 0);
-			System.out.println(sentence.getId());
+			//System.out.println(sentence.getId());
 		}
 		return keyWordList;
 	}

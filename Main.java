@@ -1,6 +1,7 @@
 package bootstrapping;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -11,11 +12,21 @@ import makeTriplicity.*;
 public class Main {
 	
 	private static ArrayList<String> medicineNameList 
-	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\リスト\\medicine_name.txt");
+					= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\リスト\\medicine_name.txt");
+	
+	private static String keyWordIncreaseFilePath 
+					= "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_increase.txt";
+	
+	private static String keyWordIncreaseFinalFilePath 
+					= "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_increase_final.txt";
+	
+	private static String seedFilePath = "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\組\\seed_id0-500.txt";
 
 	public static void main(String[] args) throws Exception {
 		
-		ArrayList<TripleSet> tripleSetList = makeTriplicity.Main.run(0, 500);
+		ArrayList<DoubleSet> seedList = FileOperation.makeSeedList(seedFilePath);
+		
+		//ArrayList<TripleSet> tripleSetList = makeTriplicity.Main.run(0, 500);
 		ArrayList<Integer> idList = new ArrayList<Integer>();
 		idList.add(2);
 		idList.add(8);
@@ -48,26 +59,35 @@ public class Main {
 		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList);
 		ArrayList<String> keyWordTextList = new ArrayList<String>();
 		ArrayList<DoubleSet> doubleSetList = new ArrayList<DoubleSet>();
+		double threshold = 1;
 		
-		for(TripleSet tripleSet : tripleSetList){
+		for(DoubleSet seed : seedList){
+			
 			ArrayList<KeyWord> keyWordList = new ArrayList<KeyWord>();
-			String target = tripleSet.getTargetElement().getText();
-			String effect = tripleSet.getEffectElement().getText();
+			String target = seed.getTarget();
+			String effect = seed.getEffect();
+			System.out.println(target + " , " + effect);
 			keyWordList = GetKeyWordList.getKeyWordList(medicineNameList, sentenceList, target, effect);
 			if(keyWordList.size() == 0){ continue; }
 			
 			for(KeyWord keyWord : keyWordList){
 				keyWordTextList.add(keyWord.getKeyWordText());
-				System.out.println(keyWord.getKeyWordText());
+				//System.out.println(keyWord.getKeyWordText());
 			}
 			
-			DoubleSet doubleSet = new DoubleSet(target, effect, keyWordList);
+			DoubleSet doubleSet = new DoubleSet(target, effect);
+			doubleSet.setKeyWordList(keyWordList);
 			doubleSetList.add(doubleSet);
 		}
 		
-		//手がかり語のエントロピー計算
-		for(String keyWordText : keyWordTextList){
+		//for(TripleSet tripleSet : tripleSetList){
 			
+		//}
+		
+		ArrayList<String> keyWordTextListNoDouble = new ArrayList<String>(new LinkedHashSet<>(keyWordTextList));
+		
+		//手がかり語のエントロピー計算
+		for(String keyWordText : keyWordTextListNoDouble){
 			double entropy = 0;
 			int keyWordTextAllNum = 0;
 			int keyWordTextNum = 0;
@@ -81,8 +101,13 @@ public class Main {
 			
 			entropy = EntropyCalculator.caluculateEntropy(keyWordNumList, keyWordTextAllNum);
 			System.out.println(keyWordText + "　→　" + entropy);
-			
+			//if(entropy > threshold){
+			FileOperation.writeTextInFile(keyWordText, keyWordIncreaseFilePath, false);
+			FileOperation.writeTextInFile(keyWordText, keyWordIncreaseFinalFilePath, true);
+			//}
 		}
+		
+		
 		
 		
 		

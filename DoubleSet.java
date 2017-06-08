@@ -8,10 +8,9 @@ public class DoubleSet {
 	private String effect;
 	private ArrayList<KeyWord> keyWordList;
 	
-	public DoubleSet(String target, String effect, ArrayList<KeyWord> keyWordList){
+	public DoubleSet(String target, String effect){
 		this.target = target;
 		this.effect = effect;
-		this.keyWordList = keyWordList;
 	}
 
 	public String getTarget() {

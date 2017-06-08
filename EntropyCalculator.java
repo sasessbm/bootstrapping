@@ -11,14 +11,14 @@ public class EntropyCalculator {
 		double ans = 0;
 		
 		ArrayList<Integer> candidateCooccurrenceList = new ArrayList<Integer>();
-		candidateCooccurrenceList.add(90);
-		candidateCooccurrenceList.add(9);
 		candidateCooccurrenceList.add(1);
+		//candidateCooccurrenceList.add(9);
+		//candidateCooccurrenceList.add(1);
 		//candidateCooccurrenceList.add(2);
 		//candidateCooccurrenceList.add(2);
 		//candidateCooccurrenceList.add(2);
 		
-		ans = caluculateEntropy(candidateCooccurrenceList, 100);
+		ans = caluculateEntropy(candidateCooccurrenceList, 1);
 		
 		
 		System.out.println(ans);
