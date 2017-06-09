@@ -2,6 +2,7 @@ package bootstrapping;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,29 +36,69 @@ public class GetKeyWordList {
 			ArrayList<Integer> P3keyWordIdList = new ArrayList<Integer>();
 			ArrayList<Integer> P4keyWordIdList = new ArrayList<Integer>();
 			String sentenceText = sentence.getText();
-
-			//構文解析結果をXml形式で取得
-			ArrayList<String> xmlList = new ArrayList<String>();
-			xmlList = SyntaxAnalys.GetSyntaxAnalysResultXml(sentenceText);
-
-			//phraseList取得　(phrase,morphemeの生成)
-			ArrayList<Phrase> phraseList = XmlReader.GetPhraseList(xmlList);
-
-			//薬剤名を戻す
-			phraseList = PostProcessing.restoreMedicineName(phraseList, sentence.getMedecineNameMap());
+			ArrayList<Phrase> phraseRestoreList = sentence.getPhraseRestoreList();
 
 			//手がかり語探索
-			P3keyWordIdList.addAll(SearchKeyWord.getKeyWordIdList(medicineNameList, phraseList, target, effect, 3));
-			P4keyWordIdList.addAll(SearchKeyWord.getKeyWordIdList(medicineNameList, phraseList, target, effect, 4));
+			P3keyWordIdList.addAll(getKeyWordIdList(medicineNameList, phraseRestoreList, target, effect, 3));
+			P4keyWordIdList.addAll(getKeyWordIdList(medicineNameList, phraseRestoreList, target, effect, 4));
 
 			//手がかり語リストに追加
-			keyWordList = addKeyWord(keyWordList, P3keyWordIdList, phraseList, 1);
-			keyWordList = addKeyWord(keyWordList, P4keyWordIdList, phraseList, 0);
+			keyWordList = addKeyWord(keyWordList, P3keyWordIdList, phraseRestoreList, 1);
+			keyWordList = addKeyWord(keyWordList, P4keyWordIdList, phraseRestoreList, 0);
 			//System.out.println(sentence.getId());
 		}
 		return keyWordList;
 	}
+	
+	public static ArrayList<Integer> getKeyWordIdList
+	(ArrayList<String> medicineNameList, ArrayList<Phrase> phraseList, String target, String effect, int patternType){
 
+		ArrayList<Integer> keyWordIdList = new ArrayList<Integer>(); 
+		int keyWordId = -1;
+		int targetDependencyIndex = -1;
+		int effectId = -1;
+		int searchIndex = phraseList.size() - 1;
+		int phraseId = 0;
+		Phrase phrase = phraseList.get(searchIndex);
+		ArrayList<Morpheme> morphemeList = phrase.getMorphemeList();
+		
+		while(searchIndex > 0){
+			ArrayList<Morpheme> targetMorphemeList = new ArrayList<Morpheme>();
+			phraseId = searchIndex;
+			while(searchIndex > 0){
+				Collections.reverse(morphemeList);
+				targetMorphemeList.addAll(morphemeList);
+				Collections.reverse(morphemeList);
+				searchIndex--;
+				phrase = phraseList.get(searchIndex);
+				morphemeList = phrase.getMorphemeList();
+				if(!morphemeList.get(morphemeList.size()-1).getMorphemeText().equals("の")){ break; }
+			}
+			Collections.reverse(targetMorphemeList);
+			String targetForm = ChangePhraseForm.changePhraseForm(targetMorphemeList, 1);
+			if(targetForm.contains(target)){
+				targetDependencyIndex = phraseList.get(phraseId).getDependencyIndex();
+
+				switch(patternType){
+				case 3:
+					effectId = P3Search.getEffectId(targetDependencyIndex, effect, phraseList);
+					if(effectId == -1){ continue; }
+					keyWordId = P3Search.getKeyWordId(effectId, phraseList, medicineNameList);
+					break;
+				case 4:
+					effectId = P4Search.getEffectId(targetDependencyIndex, effect, phraseList);
+					if(effectId == -1){ continue; }
+					keyWordId = P4Search.getKeyWordId(effectId, phraseList, medicineNameList);
+					break;
+				}
+				
+				if(keyWordId == -1 || phraseId == keyWordId){ continue; }
+				keyWordIdList.add(keyWordId);
+			}
+		}
+		return keyWordIdList;
+	}
+	
 	public static ArrayList<KeyWord> addKeyWord
 	(ArrayList<KeyWord> keyWordList, ArrayList<Integer> keyWordIdList, ArrayList<Phrase> phraseList, int keyWordIndex){
 		
@@ -65,15 +106,13 @@ public class GetKeyWordList {
 		for(int id : keyWordIdList){
 			KeyWord keyWord = new KeyWord();
 			Morpheme morpheme = phraseList.get(id).getMorphemeList().get(keyWordIndex);
+			
 			if(!morpheme.getOriginalForm().equals("*")){
-				//keyWordList.add(morpheme.getOriginalForm());
 				keyWord.setKeyWordText(morpheme.getOriginalForm());
-				//System.out.println(morpheme.getOriginalForm());
 			}else{
-				//keyWordList.add(morpheme.getMorphemeText());
 				keyWord.setKeyWordText(morpheme.getMorphemeText());
-				//System.out.println(morpheme.getMorphemeText());
 			}
+			
 			keyWordList.add(keyWord);
 		}
 		return keyWordList;

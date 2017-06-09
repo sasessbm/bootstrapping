@@ -18,14 +18,16 @@ public class FileOperation {
 		pw.close();
 	}
 	
-	public static ArrayList<DoubleSet> makeSeedList(String filePath) {
+	public static ArrayList<SeedSet> makeSeedList(String filePath) {
 		
-		ArrayList<DoubleSet> seedList = new ArrayList<DoubleSet>();
+		ArrayList<SeedSet> seedList = new ArrayList<SeedSet>();
 		ArrayList<String> seedTextList = makeTriplicity.GetTextFileList.fileRead(filePath);
 		
 		for(String seedText : seedTextList){
+			//System.out.println(seedText);
+			if(!seedText.contains(",")){ continue; }
 			String[] elementArray = seedText.split(",");
-			seedList.add(new DoubleSet(elementArray[0], elementArray[1]));
+			seedList.add(new SeedSet(elementArray[0], elementArray[1]));
 		}
 		return seedList;
 	}

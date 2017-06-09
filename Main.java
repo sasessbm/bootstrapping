@@ -1,4 +1,5 @@
 package bootstrapping;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -12,7 +13,7 @@ import makeTriplicity.*;
 public class Main {
 	
 	private static ArrayList<String> medicineNameList 
-					= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\リスト\\medicine_name.txt");
+					= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\薬剤名\\medicine_name.txt");
 	
 	private static String keyWordIncreaseFilePath 
 					= "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_increase.txt";
@@ -20,11 +21,11 @@ public class Main {
 	private static String keyWordIncreaseFinalFilePath 
 					= "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_increase_final.txt";
 	
-	private static String seedFilePath = "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\組\\seed_id0-500.txt";
+	private static String seedFilePath = "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\組\\seed.txt";
 
 	public static void main(String[] args) throws Exception {
 		
-		ArrayList<DoubleSet> seedList = FileOperation.makeSeedList(seedFilePath);
+		ArrayList<SeedSet> seedSetList = FileOperation.makeSeedList(seedFilePath);
 		
 		//ArrayList<TripleSet> tripleSetList = makeTriplicity.Main.run(0, 500);
 		ArrayList<Integer> idList = new ArrayList<Integer>();
@@ -55,34 +56,28 @@ public class Main {
 		idList.add(482);
 		idList.add(485);
 		
-		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(500, 1000);
-		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList);
+		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(500, 1000, medicineNameList);
+		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList, medicineNameList);
 		ArrayList<String> keyWordTextList = new ArrayList<String>();
-		ArrayList<DoubleSet> doubleSetList = new ArrayList<DoubleSet>();
+		ArrayList<String> keyWordTmpList = new ArrayList<String>();
+		//ArrayList<SeedSet> seedSetList = new ArrayList<SeedSet>();
 		double threshold = 1;
 		
-		for(DoubleSet seed : seedList){
-			
+		//手がかり語取得
+		for(SeedSet seedSet : seedSetList){
 			ArrayList<KeyWord> keyWordList = new ArrayList<KeyWord>();
-			String target = seed.getTarget();
-			String effect = seed.getEffect();
+			String target = seedSet.getTarget();
+			String effect = seedSet.getEffect();
 			System.out.println(target + " , " + effect);
 			keyWordList = GetKeyWordList.getKeyWordList(medicineNameList, sentenceList, target, effect);
-			if(keyWordList.size() == 0){ continue; }
+			if(keyWordList == null){ continue; }
 			
 			for(KeyWord keyWord : keyWordList){
 				keyWordTextList.add(keyWord.getKeyWordText());
-				//System.out.println(keyWord.getKeyWordText());
 			}
 			
-			DoubleSet doubleSet = new DoubleSet(target, effect);
-			doubleSet.setKeyWordList(keyWordList);
-			doubleSetList.add(doubleSet);
+			seedSet.setKeyWordList(keyWordList);
 		}
-		
-		//for(TripleSet tripleSet : tripleSetList){
-			
-		//}
 		
 		ArrayList<String> keyWordTextListNoDouble = new ArrayList<String>(new LinkedHashSet<>(keyWordTextList));
 		
@@ -93,8 +88,8 @@ public class Main {
 			int keyWordTextNum = 0;
 			ArrayList<Integer> keyWordNumList = new ArrayList<Integer>();
 			
-			for(DoubleSet doubleSet : doubleSetList){
-				keyWordTextNum = doubleSet.getKeyWordNum(keyWordText);
+			for(SeedSet seedSet : seedSetList){
+				keyWordTextNum = seedSet.getKeyWordNum(keyWordText);
 				keyWordNumList.add(keyWordTextNum);
 				keyWordTextAllNum += keyWordTextNum;
 			}
@@ -102,13 +97,28 @@ public class Main {
 			entropy = EntropyCalculator.caluculateEntropy(keyWordNumList, keyWordTextAllNum);
 			System.out.println(keyWordText + "　→　" + entropy);
 			//if(entropy > threshold){
-			FileOperation.writeTextInFile(keyWordText, keyWordIncreaseFilePath, false);
+			//FileOperation.writeTextInFile(keyWordText, keyWordIncreaseFilePath, true);
+			keyWordTmpList.add(keyWordText);
 			FileOperation.writeTextInFile(keyWordText, keyWordIncreaseFinalFilePath, true);
 			//}
 		}
 		
-		
-		
+		//三つ組取得
+		for(Sentence sentence : sentenceList){
+			ArrayList<Phrase> phraseReplaceList = sentence.getPhraseReplaceList();
+			ArrayList<Phrase> phraseRestoreList = sentence.getPhraseRestoreList();
+			ArrayList<TripleSetInfo> tripleSetInfoList 
+						= SearchElementPhrase.getTripleSetInfoList(phraseReplaceList, keyWordTmpList);
+			ArrayList<TripleSet> tripleSetList 
+						= GetTripleSetList.getTripleSetList(tripleSetInfoList, phraseRestoreList, medicineNameList);
+			for(TripleSet tripleSet : tripleSetList){
+				PostProcessing.deleteParentheses(tripleSet);
+				System.out.println
+				(tripleSet.getMedicineName()+","+tripleSet.getTargetElement().getText()+","+tripleSet.getEffectElement().getText());
+			}
+			
+			
+		}
 		
 		
 //		for(String keyWordText : keyWordTextList){

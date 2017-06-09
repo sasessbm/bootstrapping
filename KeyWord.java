@@ -2,10 +2,12 @@ package bootstrapping;
 
 import java.util.ArrayList;
 
+import makeTriplicity.TripleSet;
+
 public class KeyWord {
 	
 	private String keyWordText;
-	private ArrayList<DoubleSet> setList;
+	private ArrayList<TripleSet> tripleSetList;
 	
 	public KeyWord(){
 		
@@ -19,12 +21,12 @@ public class KeyWord {
 		this.keyWordText = keyWordText;
 	}
 
-	public ArrayList<DoubleSet> getSetList() {
-		return setList;
+	public ArrayList<TripleSet> getTripleSetList() {
+		return tripleSetList;
 	}
 
-	public void setSetList(ArrayList<DoubleSet> setList) {
-		this.setList = setList;
+	public void setTripleSetList(ArrayList<TripleSet> tripleSetList) {
+		this.tripleSetList = tripleSetList;
 	}
 
 }

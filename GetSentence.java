@@ -1,40 +1,48 @@
 package bootstrapping;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import makeTriplicity.*;
 
 public class GetSentence {
 
-	private static ArrayList<String> medicineNameList 
-	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\リスト\\medicine_name.txt");
+//	private static ArrayList<String> medicineNameList 
+//	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\リスト\\medicine_name.txt");
 
-	public static ArrayList<Sentence> getSentenceList(ArrayList<Integer> idList) throws Exception{
+	public static ArrayList<Sentence> getSentenceList
+						(ArrayList<Integer> idList, ArrayList<String> medicineNameList) throws Exception{
 
 		ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
 
 		//recordList取得　(recordの生成)
 		ArrayList<Record> recordList = GetRecord.getRecordList(idList);
 		
-		sentenceList = makeSentenceList(recordList);
+		sentenceList = makeSentenceList(recordList, medicineNameList);
 		
 		return sentenceList;
 	}
 
-	public static ArrayList<Sentence> getSentenceList(int startRecordNum, int endRecordNum) throws Exception{
+	public static ArrayList<Sentence> getSentenceList
+						(int startRecordNum, int endRecordNum,ArrayList<String> medicineNameList) throws Exception{
 
 		ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
 
 		//recordList取得　(recordの生成)
 		ArrayList<Record> recordList = GetRecord.getRecordList(startRecordNum, endRecordNum);
 		
-		sentenceList = makeSentenceList(recordList);
+		sentenceList = makeSentenceList(recordList, medicineNameList);
 		
 		return sentenceList;
 	}
 
-	public static ArrayList<Sentence> makeSentenceList(ArrayList<Record> recordList){
+	public static ArrayList<Sentence> makeSentenceList(ArrayList<Record> recordList, ArrayList<String> medicineNameList) 
+															throws SAXException, IOException, ParserConfigurationException{
 
 		ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
 		ArrayList<String> sentenceTextList = new ArrayList<String>();
@@ -56,14 +64,36 @@ public class GetSentence {
 
 				//前処理
 				TreeMap<Integer, String> medicineNameMap = 
-						PreProcessing.getMedicineNameMap(sentenceText,medicineNameList); //薬剤名取得
+						PreProcessing.getMedicineNameMap(sentenceText, medicineNameList); //薬剤名取得
 				sentenceText = PreProcessing.replaceMedicineName(sentenceText, medicineNameMap);	//薬剤名置き換え
 				sentenceText = PreProcessing.deleteParentheses(sentenceText);	//括弧削除
 				sentenceText = PreProcessing.deleteSpace(sentenceText);	//スペース削除
 
 				if(sentenceText.equals(null) || sentenceText.equals("")){ continue; }	//空白の文は対象としない
 				
-				Sentence sentence = new Sentence(sentenceText, id, medicineNameMap); 
+				//構文解析結果をXml形式で取得
+				ArrayList<String> xmlList = new ArrayList<String>();
+				xmlList = SyntaxAnalys.GetSyntaxAnalysResultXml(sentenceText);
+
+				//phraseList取得　(phrase,morphemeの生成)
+				ArrayList<Phrase> phraseReplaceList = XmlReader.GetPhraseList(xmlList);
+				ArrayList<Phrase> phraseRestoreList = new ArrayList<Phrase>();
+				
+				for(Phrase replacePhrase : phraseReplaceList){
+					ArrayList<Morpheme> morphemeRestoreList = new ArrayList<Morpheme>();
+					for(Morpheme morpheme : replacePhrase.getMorphemeList()){
+						morphemeRestoreList.add(new Morpheme(morpheme.getId(), morpheme.getMorphemeText(), morpheme.getFeature()));
+					}
+					Phrase restorePhrase = 
+					new Phrase(replacePhrase.getId(), replacePhrase.getPhraseText(), replacePhrase.getDependencyIndex(), morphemeRestoreList);
+					phraseRestoreList.add(restorePhrase);
+				}
+
+				//薬剤名を戻す
+				phraseRestoreList = PostProcessing.restoreMedicineName(phraseRestoreList, medicineNameMap);
+				
+				//sentence生成
+				Sentence sentence = new Sentence(sentenceText, id, phraseReplaceList, phraseRestoreList);
 				sentenceList.add(sentence);
 			}
 		}

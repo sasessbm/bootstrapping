@@ -2,13 +2,13 @@ package bootstrapping;
 
 import java.util.ArrayList;
 
-public class DoubleSet {
+public class SeedSet {
 	
 	private String target;
 	private String effect;
 	private ArrayList<KeyWord> keyWordList;
 	
-	public DoubleSet(String target, String effect){
+	public SeedSet(String target, String effect){
 		this.target = target;
 		this.effect = effect;
 	}

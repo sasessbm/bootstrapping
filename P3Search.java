@@ -7,7 +7,7 @@ import makeTriplicity.*;
 
 public class P3Search {
 	
-	public static final String MEDICINE = "MEDICINE";
+	//public static final String MEDICINE = "MEDICINE";
 
 	public static int getEffectId(int targetDependencyIndex, String effect, ArrayList<Phrase> phraseList){
 
