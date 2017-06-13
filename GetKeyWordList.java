@@ -104,16 +104,13 @@ public class GetKeyWordList {
 		
 		if(keyWordIdList.size() == 0){ return keyWordList; }
 		for(int id : keyWordIdList){
-			KeyWord keyWord = new KeyWord();
 			Morpheme morpheme = phraseList.get(id).getMorphemeList().get(keyWordIndex);
 			
 			if(!morpheme.getOriginalForm().equals("*")){
-				keyWord.setKeyWordText(morpheme.getOriginalForm());
+				keyWordList.add(new KeyWord(morpheme.getOriginalForm()));
 			}else{
-				keyWord.setKeyWordText(morpheme.getMorphemeText());
+				keyWordList.add(new KeyWord(morpheme.getMorphemeText()));
 			}
-			
-			keyWordList.add(keyWord);
 		}
 		return keyWordList;
 	}
