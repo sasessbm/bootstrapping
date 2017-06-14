@@ -35,7 +35,9 @@ public class GetKeyWordList {
 		for(Sentence sentence : sentenceList){
 			ArrayList<Integer> P3keyWordIdList = new ArrayList<Integer>();
 			ArrayList<Integer> P4keyWordIdList = new ArrayList<Integer>();
-			String sentenceText = sentence.getText();
+			//String sentenceText = sentence.getText();
+			//System.out.println(sentenceText);
+			//System.out.println(sentence.getId());
 			ArrayList<Phrase> phraseRestoreList = sentence.getPhraseRestoreList();
 
 			//手がかり語探索
@@ -76,19 +78,22 @@ public class GetKeyWordList {
 			}
 			Collections.reverse(targetMorphemeList);
 			String targetForm = ChangePhraseForm.changePhraseForm(targetMorphemeList, 1);
+			
 			if(targetForm.contains(target)){
+				//System.out.println("対象" + target);
+				//System.out.println("対象候補" + targetForm);
 				targetDependencyIndex = phraseList.get(phraseId).getDependencyIndex();
 
 				switch(patternType){
 				case 3:
 					effectId = P3Search.getEffectId(targetDependencyIndex, effect, phraseList);
 					if(effectId == -1){ continue; }
-					keyWordId = P3Search.getKeyWordId(effectId, phraseList, medicineNameList);
+					keyWordId = P3Search.getKeyWordId(phraseId, effectId, phraseList, medicineNameList);
 					break;
 				case 4:
 					effectId = P4Search.getEffectId(targetDependencyIndex, effect, phraseList);
 					if(effectId == -1){ continue; }
-					keyWordId = P4Search.getKeyWordId(effectId, phraseList, medicineNameList);
+					keyWordId = P4Search.getKeyWordId(phraseId, effectId, phraseList, medicineNameList);
 					break;
 				}
 				
@@ -103,8 +108,19 @@ public class GetKeyWordList {
 	(ArrayList<KeyWord> keyWordList, ArrayList<Integer> keyWordIdList, ArrayList<Phrase> phraseList, int keyWordIndex){
 		
 		if(keyWordIdList.size() == 0){ return keyWordList; }
+		
+//		for(Phrase phrase : phraseList){
+//			System.out.println(phrase.getPhraseText());
+//		}
 		for(int id : keyWordIdList){
-			Morpheme morpheme = phraseList.get(id).getMorphemeList().get(keyWordIndex);
+			
+			Phrase phrase = phraseList.get(id);
+			//System.out.println(id);
+			//System.out.println("MorphemeList().get("+keyWordIndex+")" + phrase.getMorphemeList().get(keyWordIndex).getMorphemeText());
+			Morpheme morpheme = phrase.getMorphemeList().get(keyWordIndex);
+			
+			//手がかり語は名詞または動詞とする
+			if(!(morpheme.getPartOfSpeech().equals("名詞") || morpheme.getPartOfSpeech().equals("動詞"))){ continue; }
 			
 			if(!morpheme.getOriginalForm().equals("*")){
 				keyWordList.add(new KeyWord(morpheme.getOriginalForm()));

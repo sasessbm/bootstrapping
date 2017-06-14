@@ -36,7 +36,10 @@ public class KeyWord {
 		String effect = tripleSet.getEffectElement().getText();
 		//String keyWordText = keyWord.getKeyWordText();
 		for(TripleSet set : tripleSetList){
-			if(set.getTargetElement().getText().equals(target) && set.getEffectElement().getText().equals(effect)){ 
+//			if(set.getTargetElement().getText().equals(target) && set.getEffectElement().getText().equals(effect)){ 
+//				count++; 
+//			}
+			if(set.getTargetElement().getText().equals(target)){ 
 				count++; 
 			}
 		}

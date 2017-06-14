@@ -11,14 +11,14 @@ public class EntropyCalculator {
 		double ans = 0;
 		
 		ArrayList<Integer> candidateCooccurrenceList = new ArrayList<Integer>();
-		candidateCooccurrenceList.add(1);
+		candidateCooccurrenceList.add(0);
 		//candidateCooccurrenceList.add(9);
 		//candidateCooccurrenceList.add(1);
 		//candidateCooccurrenceList.add(2);
 		//candidateCooccurrenceList.add(2);
 		//candidateCooccurrenceList.add(2);
 		
-		ans = caluculateEntropy(candidateCooccurrenceList, 1);
+		ans = caluculateEntropy(candidateCooccurrenceList, 0);
 		
 		
 		
@@ -35,7 +35,11 @@ public class EntropyCalculator {
 		for(int candidateCooccurrenceNum : candidateCooccurrenceList){
 			if(candidateCooccurrenceNum == 0){ continue; }
 			cooccurrenceProbability = caluculateCooccurrenceProbability(candidateCooccurrenceNum, candidateTotalNum);
+			//System.out.println("確率" + cooccurrenceProbability);
+			
 			informationContent = caluculateInformationContent(cooccurrenceProbability);
+			//System.out.println("情報量" + informationContent);
+			
 			entropy += informationContent;
 			//System.out.println(entropy);
 		}
