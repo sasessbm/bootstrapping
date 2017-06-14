@@ -26,8 +26,6 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 
 		//ArrayList<SeedSet> seedSetList = FileOperation.makeSeedList(seedFilePath);
-
-
 		//ArrayList<TripleSet> tripleSetList = makeTriplicity.Main.run(0, 500);
 		ArrayList<Integer> idList = new ArrayList<Integer>();
 		idList.add(2);
@@ -57,24 +55,28 @@ public class Main {
 		idList.add(482);
 		idList.add(485);
 
-		//ArrayList<TripleSet> tripleSetList = FileOperation.makeTripleSetList(seedFilePath);
 		//シードセット
 		ArrayList<TripleSet> tripleSetIncreaseList = SeedSetter.getSeedList();
 		ArrayList<String> keyWordTextIncreaseList = new ArrayList<String>();
 		
+		ArrayList<TripleSet> tripleSetIncreaseFinalList = new ArrayList<TripleSet>();
 		ArrayList<KeyWord> keyWordIncreaseFinalList = new ArrayList<KeyWord>();
-		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(500, 1000, medicineNameList);
-		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList, medicineNameList);
 		
-		ArrayList<String> keyWordTextForSearchList = new ArrayList<String>();
-		ArrayList<TripleSet> tripleSetForSearchList = new ArrayList<TripleSet>();
+		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 6000, medicineNameList);
+		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList, medicineNameList);
+		
+		double threshold = 0;
+		double constant = 0.5;
+		int repeatCount = 5;
 		
 		
-		
-		//ArrayList<SeedSet> seedSetList = new ArrayList<SeedSet>();
-		double threshold = -1;
-		
-		for(int i=0; i<2; i++){
+		for(int i=0; i < repeatCount; i++){
+			
+			System.out.println(i+1 + "回目");
+			ArrayList<TripleSet> tripleSetForSearchList = new ArrayList<TripleSet>();
+			ArrayList<String> keyWordTextForSearchList = new ArrayList<String>();
+			int tripleSetUsedNum = 0;
+			int keyWordUsedNum = 0;
 			
 			//三つ組から手がかり語取得
 			for(TripleSet tripleSet : tripleSetIncreaseList){
@@ -90,11 +92,17 @@ public class Main {
 					keyWordTextForSearchList.add(keyWord.getKeyWordText());
 				}
 				tripleSet.setKeyWordList(keyWordTmpList);
+				tripleSetUsedNum ++;
 			}
 
-			//重複削除
-			//ArrayList<String> keyWordAllNoDoubleTextList = new ArrayList<String>(new LinkedHashSet<>(keyWordAllTextList));
+			//手がかり語リストの重複削除
 			keyWordTextForSearchList = new ArrayList<String>(new LinkedHashSet<>(keyWordTextForSearchList));
+			
+			//閾値計算
+			if(i != 0){
+				threshold = constant * (Math.log(tripleSetUsedNum) / Math.log(2.0));
+				System.out.println(threshold);
+			}
 
 			//手がかり語のエントロピー計算
 			for(String keyWordText : keyWordTextForSearchList){
@@ -113,9 +121,8 @@ public class Main {
 				System.out.println(keyWordText + "　→　" + entropy);
 				
 				//閾値以上の手がかり語をリストに追加
-				if(entropy > threshold){
+				if(entropy >= threshold){
 					keyWordTextIncreaseList.add(keyWordText);
-					//FileOperation.writeTextInFile(keyWordText, keyWordIncreaseFinalFilePath, true);
 				}
 			}
 			
@@ -125,9 +132,6 @@ public class Main {
 			ArrayList<KeyWord> keyWordIncreaseList = Transformation.stringToKeyWord(keyWordTextIncreaseList);
 			
 			keyWordIncreaseFinalList.addAll(keyWordIncreaseList);
-			//ArrayList<KeyWord> keyWordList = new ArrayList<KeyWord>();
-			//ArrayList<TripleSet> tripleSetList = new ArrayList<TripleSet>();
-			
 
 			//手がかり語から三つ組取得
 			for(KeyWord keyWord : keyWordIncreaseList){
@@ -139,11 +143,17 @@ public class Main {
 				
 				//手がかり語に三つ組リストセット
 				keyWord.setTripleSetList(tripleSetTmpList);
-				//keyWordList.add(keyWord);
+				keyWordUsedNum ++;
 			}
 
 			//三つ組リストの重複削除
 			tripleSetForSearchList = makeTriplicity.GetTripleSetList.deleteSameSet(tripleSetForSearchList);
+			
+			//閾値計算
+			if(i != 0){
+				threshold = constant * (Math.log(keyWordUsedNum) / Math.log(2.0));
+				System.out.println(threshold);
+			}
 
 			//三つ組のエントロピー計算
 			for(TripleSet tripleSet : tripleSetForSearchList){
@@ -163,15 +173,27 @@ public class Main {
 						+tripleSet.getEffectElement().getText() +"　→　" + entropy + "　→　" + tripleSet.getUsedKeyWord());
 				
 				//閾値以上の三つ組をリストに追加
-				if(entropy > threshold){
+				if(entropy >= threshold){
 					tripleSetIncreaseList.add(tripleSet);
 				}
 			}
-			
 			//手がかり語増加リスト初期化
-			keyWordIncreaseList.clear();
+			//keyWordIncreaseList.clear();
 			keyWordTextIncreaseList.clear();
 			
+			tripleSetIncreaseFinalList.addAll(tripleSetIncreaseList);
+			
+		}
+		
+		System.out.println("\r\n獲得結果");
+		
+		for(KeyWord keyWord : keyWordIncreaseFinalList){
+			System.out.println(keyWord.getKeyWordText());
+		}
+		
+		for(TripleSet tripleSet : tripleSetIncreaseFinalList){
+			System.out.println(tripleSet.getMedicineName()+ " , " + tripleSet.getTargetElement().getText() + " , " 
+					+tripleSet.getEffectElement().getText());
 		}
 
 		

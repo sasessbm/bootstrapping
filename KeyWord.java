@@ -11,6 +11,7 @@ public class KeyWord {
 	
 	public KeyWord(String keyWordText){
 		this.keyWordText = keyWordText;
+		tripleSetList = new ArrayList<TripleSet>();
 	}
 
 	public String getKeyWordText() {

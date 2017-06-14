@@ -21,6 +21,7 @@ public class EntropyCalculator {
 		ans = caluculateEntropy(candidateCooccurrenceList, 1);
 		
 		
+		
 		System.out.println(ans);
 
 	}
@@ -39,7 +40,11 @@ public class EntropyCalculator {
 			//System.out.println(entropy);
 		}
 		
-		return -entropy;
+		if(entropy != 0.0){
+			entropy = -entropy;
+		}
+		
+		return entropy;
 	}
 
 	public static double caluculateCooccurrenceProbability(int candidateCooccurrenceNum, int candidateTotalNum){
