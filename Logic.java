@@ -12,12 +12,24 @@ public class Logic {
 
 	public static void main(String[] args) throws Exception{
 
-		ArrayList<Integer> idList = getRandomIdList(100,1,100);
-		for(int id : idList){
+//		ArrayList<Integer> idList = getRandomIdList(100,1,100);
+//		for(int id : idList){
+//			System.out.println(id);
+//		}
+		
+		ArrayList<Integer> usedIdList = new ArrayList<Integer>();
+		usedIdList.add(2);
+		usedIdList.add(3);
+		usedIdList.add(6);
+		usedIdList.add(9);
+		usedIdList.add(12);
+		
+		ArrayList<Integer> additionalIdList = getAdditionalRandomIdList(10, 1, 30, usedIdList);
+
+		for(int id : additionalIdList){
 			System.out.println(id);
 		}
-		
-		
+
 	}
 
 
@@ -118,19 +130,18 @@ public class Logic {
 	}
 
 	//ランダムなIDリスト作成
-	public static ArrayList<Integer> getRandomIdList(int idNum, int startRange, int endRange){
+	public static ArrayList<Integer> getRandomIdList(int idNum, int startIdIndex, int endIdIndex){
 
 		ArrayList<Integer> randomIdList = new ArrayList<Integer>();
-		
 		Random rand = new Random();
-		
 		boolean isCreated;
-		int id = rand.nextInt(endRange + 1 - startRange) + startRange;
+		int id = rand.nextInt(endIdIndex + 1 - startIdIndex) + startIdIndex;
+
 		randomIdList.add(id);
-		//boolean[] randomNumArray = makeRandomNumArray(idNum, startRange, endRange);
+
 		for(int i=0; i < idNum-1; ){
 			isCreated = false;
-			id = rand.nextInt(endRange + 1 - startRange) + startRange;
+			id = rand.nextInt(endIdIndex + 1 - startIdIndex) + startIdIndex;
 			for(Integer idInList : randomIdList){
 				if(idInList == id){
 					isCreated = true;
@@ -141,10 +152,65 @@ public class Logic {
 				i++;
 			}
 		}
-
 		Collections.sort(randomIdList);
 		return randomIdList;
+	}
 
+	//IDリストを更新
+	public static ArrayList<Integer> getAdditionalRandomIdList(int idNum, int startIdIndex, int endIdIndex, ArrayList<Integer> usedIdList){
+
+		ArrayList<Integer> additionalIdList = new ArrayList<Integer>();
+		Random rand = new Random();
+		boolean isUsedId = false;
+		boolean isCreated;
+		int id = 0;
+		
+		while(true){
+			isUsedId = false;
+			id = rand.nextInt(endIdIndex + 1 - startIdIndex) + startIdIndex;
+			
+			for(int usedId : usedIdList){
+				if(id == usedId){
+					isUsedId = true;
+					break;
+				}
+			}
+			if(!isUsedId){
+				break;
+			}
+		}
+		
+		additionalIdList.add(id);
+
+		for(int i=0; i < idNum-1; ){
+			isCreated = false;
+			
+			while(true){
+				isUsedId = false;
+				id = rand.nextInt(endIdIndex + 1 - startIdIndex) + startIdIndex;
+				
+				for(int usedId : usedIdList){
+					if(id == usedId){
+						isUsedId = true;
+						break;
+					}
+				}
+				if(!isUsedId){
+					break;
+				}
+			}
+			for(Integer idInList : additionalIdList){
+				if(idInList == id){
+					isCreated = true;
+				}
+			}
+			if(!isCreated){
+				additionalIdList.add(id);
+				i++;
+			}
+		}
+		Collections.sort(additionalIdList);
+		return additionalIdList;
 	}
 
 
