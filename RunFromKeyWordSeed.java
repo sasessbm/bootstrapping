@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 import makeTriplicity.TripleSet;
+import makeTriplicity.*;
 
 public class RunFromKeyWordSeed {
 
@@ -17,7 +18,7 @@ public class RunFromKeyWordSeed {
 		ArrayList<TripleSet> tripleSetIncreaseFinalList = new ArrayList<TripleSet>();
 		ArrayList<KeyWord> keyWordIncreaseFinalList = new ArrayList<KeyWord>();
 
-		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 3200, medicineNameList);
+		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 4000, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3500, 4000, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList, medicineNameList);
 
@@ -40,7 +41,8 @@ public class RunFromKeyWordSeed {
 			//手がかり語から三つ組取得
 			for(KeyWord keyWord : keyWordIncreaseList){
 				String keyWordText = keyWord.getKeyWordText();
-				System.out.println(keyWordText);
+				System.out.println("\r\n" + keyWordText);
+				//ArrayList<TripleSet> tripleSetTmpList = GetTripleSetList.getTripleSetList(keyWordText, sentenceList, medicineNameList);
 				ArrayList<TripleSet> tripleSetTmpList = GetTripleSetList.getTripleSetList(keyWordText, sentenceList, medicineNameList);
 				if(tripleSetTmpList.size() == 0){ continue; }
 				tripleSetForSearchList.addAll(tripleSetTmpList);
@@ -120,7 +122,7 @@ public class RunFromKeyWordSeed {
 				
 				//手がかり語リストセット
 				for(KeyWord keyWord : keyWordTmpList){
-					System.out.println(target + " , " + effect+ " から 「"+ keyWord.getKeyWordText() + "」 を得ました");
+					System.out.println(target + " , " + effect+ " から 「"+ keyWord.getKeyWordText() + "」 を取得しました");
 					
 					keyWordTextForSearchList.add(keyWord.getKeyWordText());
 				}

@@ -79,7 +79,10 @@ public class SeedSetter {
 		
 		ArrayList<String> seedList = new ArrayList<String>();
 		
-		seedList.add("でる");
+		//seedList.add("でる");
+		seedList.add("飲む");
+		seedList.add("副作用");
+		seedList.add("せい");
 		
 		return seedList;
 		
