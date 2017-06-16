@@ -21,6 +21,8 @@ public class RunFromKeyWordSeed {
 		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 4000, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3500, 4000, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList, medicineNameList);
+		
+		System.out.println("取得文書数は " + sentenceList.size() + "文 です");
 
 		
 		double constant = 0.1;
@@ -46,6 +48,9 @@ public class RunFromKeyWordSeed {
 				ArrayList<TripleSet> tripleSetTmpList = GetTripleSetList.getTripleSetList(keyWordText, sentenceList, medicineNameList);
 				if(tripleSetTmpList.size() == 0){ continue; }
 				tripleSetForSearchList.addAll(tripleSetTmpList);
+				
+				//すでに取得しているものは取得しない
+				//tripleSetTmpList = Logic.deleteOverlappingFromListForKey(tripleSetTmpList, tripleSetIncreaseFinalList);
 				
 				System.out.println("「"+keyWord.getKeyWordText() + "」から、以下の三つ組を取得");
 				for(TripleSet tripleSet : tripleSetTmpList){
@@ -103,9 +108,8 @@ public class RunFromKeyWordSeed {
 			//keyWordIncreaseList.clear();
 			keyWordTextIncreaseList.clear();
 
-			
-
 			System.out.println("\r\n「以下の三つ組から新たな手がかり語取得」");
+			
 			//三つ組から手がかり語取得
 			for(TripleSet tripleSet : tripleSetIncreaseList){
 				ArrayList<KeyWord> keyWordTmpList = new ArrayList<KeyWord>();
@@ -115,6 +119,7 @@ public class RunFromKeyWordSeed {
 				keyWordTmpList = GetKeyWordList.getKeyWordList(medicineNameList, sentenceList, target, effect);
 				if(keyWordTmpList == null){ continue; }
 				
+				//すでに取得しているものは取得しない
 				keyWordTmpList = Logic.deleteOverlappingFromListForString(keyWordTmpList, keyWordSeedList);
 				keyWordTmpList = Logic.deleteOverlappingFromListForKey(keyWordTmpList, keyWordIncreaseFinalList);
 				
@@ -122,7 +127,7 @@ public class RunFromKeyWordSeed {
 				
 				//手がかり語リストセット
 				for(KeyWord keyWord : keyWordTmpList){
-					System.out.println(target + " , " + effect+ " から 「"+ keyWord.getKeyWordText() + "」 を取得しました");
+					System.out.println(target + " から 「"+ keyWord.getKeyWordText() + "」 を取得しました");
 					
 					keyWordTextForSearchList.add(keyWord.getKeyWordText());
 				}
@@ -146,6 +151,7 @@ public class RunFromKeyWordSeed {
 			//}
 
 			System.out.println("\r\n「取得した手がかり語のエントロピー計算」");
+			
 			//手がかり語のエントロピー計算
 			for(String keyWordText : keyWordTextForSearchList){
 				double entropy = 0;

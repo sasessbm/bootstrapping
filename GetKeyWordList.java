@@ -88,6 +88,7 @@ public class GetKeyWordList {
 			String targetForm = ChangePhraseForm.changePhraseForm(targetMorphemeList, 1);
 
 			if(!targetForm.contains(target)){ continue; }
+			//if(!targetForm.equals(target)){ continue; }
 			//System.out.println("対象" + target);
 			//System.out.println("対象候補" + targetForm);
 			targetDependencyIndex = phraseList.get(phraseId).getDependencyIndex();
@@ -127,7 +128,8 @@ public class GetKeyWordList {
 
 			//文節の末尾確認
 			if(!(morphemeList.get(morphemeList.size()-1).getPartOfSpeechDetails().contains("格助詞")
-					||morphemeList.get(morphemeList.size()-1).getPartOfSpeechDetails().contains("接続助詞"))){ continue; }
+					||morphemeList.get(morphemeList.size()-1).getPartOfSpeechDetails().contains("接続助詞")
+					|| morphemeList.get(morphemeList.size()-1).getPartOfSpeechDetails().contains("読点"))){ continue; }
 
 			Morpheme morpheme = morphemeList.get(keyWordIndex);
 

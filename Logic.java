@@ -31,7 +31,7 @@ public class Logic {
 
 	//重複した組を削除
 	public static ArrayList<KeyWord> deleteOverlappingFromListForKey
-				(ArrayList<KeyWord> removeList, ArrayList<KeyWord> compareList){
+	(ArrayList<KeyWord> removeList, ArrayList<KeyWord> compareList){
 
 		for(KeyWord key : compareList){
 			String textBase = key.getKeyWordText();
@@ -44,8 +44,25 @@ public class Logic {
 		return removeList;
 	}
 
+//	public static ArrayList<TripleSet> deleteOverlappingFromListForTripleSet
+//	(ArrayList<TripleSet> removeList, ArrayList<TripleSet> compareList){
+//
+//		for(TripleSet tripleSet : compareList){
+//			
+//			String targetBase = tripleSet.getTargetElement().getText();
+//			String effectBase = tripleSet.getEffectElement().getText();
+//			
+//			for(int i = removeList.size() - 1; i >= 0; i--){
+//				if(removeList.get(i).getTargetElement().getText().equals(targetBase) && ){
+//					removeList.remove(i);
+//				}
+//			}
+//		}
+//		return removeList;
+//	}
+
 	public static ArrayList<KeyWord> deleteOverlappingFromListForString
-				(ArrayList<KeyWord> removeList, ArrayList<String> compareList){
+	(ArrayList<KeyWord> removeList, ArrayList<String> compareList){
 
 		for(String word : compareList){
 			//String textBase = key.getKeyWordText();
