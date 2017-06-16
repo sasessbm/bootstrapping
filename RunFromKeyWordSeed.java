@@ -7,43 +7,49 @@ import makeTriplicity.TripleSet;
 
 public class RunFromKeyWordSeed {
 
-	public static void run(ArrayList<String> keyWordList, ArrayList<String> medicineNameList) throws Exception {
+	public static void run(ArrayList<String> keyWordSeedList, ArrayList<String> medicineNameList) throws Exception {
 
 		//シードセット
 		ArrayList<TripleSet> tripleSetIncreaseList = new ArrayList<TripleSet>();
-		ArrayList<String> keyWordTextIncreaseList = keyWordList;
+		ArrayList<KeyWord> keyWordIncreaseList = Transformation.stringToKeyWord(keyWordSeedList);
+		ArrayList<String> keyWordTextIncreaseList = new ArrayList<String>();
 
 		ArrayList<TripleSet> tripleSetIncreaseFinalList = new ArrayList<TripleSet>();
 		ArrayList<KeyWord> keyWordIncreaseFinalList = new ArrayList<KeyWord>();
 
-		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 4000, medicineNameList);
+		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 3200, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3500, 4000, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList, medicineNameList);
 
-		double threshold = 0;
+		
 		double constant = 0.1;
 		int repeatCount = 10;
 
 		for(int i=1; i <= repeatCount; i++){
 
 			System.out.println("\r\n" + i + "回目");
+			double threshold = 0;
 			ArrayList<TripleSet> tripleSetForSearchList = new ArrayList<TripleSet>();
 			ArrayList<String> keyWordTextForSearchList = new ArrayList<String>();
 			int tripleSetUsedNum = 0;
 			int keyWordUsedNum = 0;
 
-			ArrayList<KeyWord> keyWordIncreaseList = Transformation.stringToKeyWord(keyWordTextIncreaseList);
-
-			keyWordIncreaseFinalList.addAll(keyWordIncreaseList);
-
-			System.out.println("「手がかり語から三つ組取得」");
+			if(i==1){ System.out.println("\r\n「以下の初期手がかり語から三つ組取得」"); }
+			else{ System.out.println("\r\n「以下の手がかり語から新たな三つ組取得」"); }
+			
 			//手がかり語から三つ組取得
 			for(KeyWord keyWord : keyWordIncreaseList){
 				String keyWordText = keyWord.getKeyWordText();
-				//tripleSetIncreaseList = GetTripleSetList.getTripleSetList(keyWordText, sentenceList, medicineNameList);
+				System.out.println(keyWordText);
 				ArrayList<TripleSet> tripleSetTmpList = GetTripleSetList.getTripleSetList(keyWordText, sentenceList, medicineNameList);
 				if(tripleSetTmpList.size() == 0){ continue; }
 				tripleSetForSearchList.addAll(tripleSetTmpList);
+				
+				System.out.println("「"+keyWord.getKeyWordText() + "」から、以下の三つ組を取得");
+				for(TripleSet tripleSet : tripleSetTmpList){
+					System.out.println(tripleSet.getMedicineName()+ " , " + tripleSet.getTargetElement().getText() 
+																		+ " , " +tripleSet.getEffectElement().getText());
+				}
 
 				//手がかり語に三つ組リストセット
 				keyWord.setTripleSetList(tripleSetTmpList);
@@ -51,7 +57,7 @@ public class RunFromKeyWordSeed {
 			}
 
 			if(keyWordUsedNum == 0){
-				System.out.println("\r\n三つ組を獲得できませんでした");
+				System.out.println("\r\n三つ組を取得できませんでした");
 				break;
 			}
 
@@ -59,13 +65,13 @@ public class RunFromKeyWordSeed {
 			tripleSetForSearchList = makeTriplicity.GetTripleSetList.deleteSameSet(tripleSetForSearchList);
 
 			//閾値計算
-			if(i != 1){
-				//System.out.println("keyWordUsedNum・・・"+keyWordUsedNum);
-				threshold = constant * (Math.log(keyWordUsedNum) / Math.log(2.0));
-				System.out.println("閾値・・・" + threshold);
-			}
+//			if(i > 2){
+//				//System.out.println("keyWordUsedNum・・・"+keyWordUsedNum);
+//				threshold = constant * (Math.log(keyWordUsedNum) / Math.log(2.0));
+//				System.out.println("閾値・・・" + threshold);
+//			}
 
-			System.out.println("「三つ組のエントロピー計算」");
+			System.out.println("\r\n「取得した三つ組のエントロピー計算」");
 			//三つ組のエントロピー計算
 			for(TripleSet tripleSet : tripleSetForSearchList){
 				double entropy = 0;
@@ -84,7 +90,7 @@ public class RunFromKeyWordSeed {
 					entropy = EntropyCalculator.caluculateEntropy(tripleSetNumList, tripleSetAllNum);
 				}
 				System.out.println(tripleSet.getMedicineName()+ " , " + tripleSet.getTargetElement().getText() + " , " 
-						+tripleSet.getEffectElement().getText() +"　→　" + entropy + "　→　" + tripleSet.getUsedKeyWord());
+						+tripleSet.getEffectElement().getText() +"　→　" + entropy + "　(" + tripleSet.getUsedKeyWord()+")");
 
 				//閾値以上の三つ組をリストに追加
 				if(entropy >= threshold){
@@ -97,7 +103,7 @@ public class RunFromKeyWordSeed {
 
 			
 
-			System.out.println("「三つ組から手がかり語取得」");
+			System.out.println("\r\n「以下の三つ組から新たな手がかり語取得」");
 			//三つ組から手がかり語取得
 			for(TripleSet tripleSet : tripleSetIncreaseList){
 				ArrayList<KeyWord> keyWordTmpList = new ArrayList<KeyWord>();
@@ -107,10 +113,15 @@ public class RunFromKeyWordSeed {
 				keyWordTmpList = GetKeyWordList.getKeyWordList(medicineNameList, sentenceList, target, effect);
 				if(keyWordTmpList == null){ continue; }
 				
-				keyWordTmpList = Logic.deleteOverlappingFromList(keyWordTmpList, keyWordIncreaseFinalList);
-
+				keyWordTmpList = Logic.deleteOverlappingFromListForString(keyWordTmpList, keyWordSeedList);
+				keyWordTmpList = Logic.deleteOverlappingFromListForKey(keyWordTmpList, keyWordIncreaseFinalList);
+				
+				if(keyWordTmpList == null || keyWordTmpList.size() == 0){ continue; }
+				
 				//手がかり語リストセット
 				for(KeyWord keyWord : keyWordTmpList){
+					System.out.println(target + " , " + effect+ " から 「"+ keyWord.getKeyWordText() + "」 を得ました");
+					
 					keyWordTextForSearchList.add(keyWord.getKeyWordText());
 				}
 				tripleSet.setKeyWordList(keyWordTmpList);
@@ -118,7 +129,7 @@ public class RunFromKeyWordSeed {
 			}
 
 			if(tripleSetUsedNum == 0){
-				System.out.println("\r\n手がかり語を獲得できませんでした");
+				System.out.println("\r\n手がかり語を取得できませんでした");
 				break;
 			}
 
@@ -126,13 +137,13 @@ public class RunFromKeyWordSeed {
 			keyWordTextForSearchList = new ArrayList<String>(new LinkedHashSet<>(keyWordTextForSearchList));
 
 			//閾値計算
-			if(i != 1){
+			//if(i != 1){
 				//System.out.println("tripleSetUsedNum・・・"+tripleSetUsedNum);
-				threshold = constant * (Math.log(tripleSetUsedNum) / Math.log(2.0));
-				System.out.println("閾値・・・" + threshold);
-			}
+//				threshold = constant * (Math.log(tripleSetUsedNum) / Math.log(2.0));
+//				System.out.println("閾値・・・" + threshold);
+			//}
 
-			System.out.println("「手がかり語のエントロピー計算」");
+			System.out.println("\r\n「取得した手がかり語のエントロピー計算」");
 			//手がかり語のエントロピー計算
 			for(String keyWordText : keyWordTextForSearchList){
 				double entropy = 0;
@@ -157,8 +168,14 @@ public class RunFromKeyWordSeed {
 					keyWordTextIncreaseList.add(keyWordText);
 				}
 			}
+			
+			//手がかり語増加リスト更新
+			keyWordIncreaseList = Transformation.stringToKeyWord(keyWordTextIncreaseList);
+			
+			//手がかり語最終増加リスト更新
+			keyWordIncreaseFinalList.addAll(keyWordIncreaseList);
 
-			//三つ組最終リスト更新
+			//三つ組最終増加リスト更新
 			tripleSetIncreaseFinalList.addAll(tripleSetIncreaseList);
 			
 			//三つ組増加リスト初期化

@@ -45,13 +45,18 @@ public class GetKeyWordList {
 			P4keyWordIdList.addAll(getKeyWordIdList(medicineNameList, phraseRestoreList, target, effect, 4));
 
 			//手がかり語リストに追加
-			keyWordList = addKeyWord(keyWordList, P3keyWordIdList, phraseRestoreList, 1);
-			keyWordList = addKeyWord(keyWordList, P4keyWordIdList, phraseRestoreList, 0);
+			if(P3keyWordIdList.size() != 0){
+				keyWordList = addKeyWord(keyWordList, P3keyWordIdList, phraseRestoreList, 1);
+			}
+			if(P4keyWordIdList.size() != 0){
+				keyWordList = addKeyWord(keyWordList, P4keyWordIdList, phraseRestoreList, 0);
+			}
+
 			//System.out.println(sentence.getId());
 		}
 		return keyWordList;
 	}
-	
+
 	public static ArrayList<Integer> getKeyWordIdList
 	(ArrayList<String> medicineNameList, ArrayList<Phrase> phraseList, String target, String effect, int patternType){
 
@@ -63,7 +68,7 @@ public class GetKeyWordList {
 		int phraseId = 0;
 		Phrase phrase = phraseList.get(searchIndex);
 		ArrayList<Morpheme> morphemeList = phrase.getMorphemeList();
-		
+
 		while(searchIndex > 0){
 			ArrayList<Morpheme> targetMorphemeList = new ArrayList<Morpheme>();
 			phraseId = searchIndex;
@@ -76,56 +81,69 @@ public class GetKeyWordList {
 				morphemeList = phrase.getMorphemeList();
 				if(!morphemeList.get(morphemeList.size()-1).getMorphemeText().equals("の")){ break; }
 			}
+			String lastMorphemeText = targetMorphemeList.get(0).getMorphemeText();
+			if(!(lastMorphemeText.equals("が") || lastMorphemeText.equals("は") 
+												|| lastMorphemeText.equals("を"))){ continue; }
 			Collections.reverse(targetMorphemeList);
 			String targetForm = ChangePhraseForm.changePhraseForm(targetMorphemeList, 1);
-			
-			if(targetForm.contains(target)){
-				//System.out.println("対象" + target);
-				//System.out.println("対象候補" + targetForm);
-				targetDependencyIndex = phraseList.get(phraseId).getDependencyIndex();
 
-				switch(patternType){
-				case 3:
-					effectId = P3Search.getEffectId(targetDependencyIndex, effect, phraseList);
-					if(effectId == -1){ continue; }
-					keyWordId = P3Search.getKeyWordId(phraseId, effectId, phraseList, medicineNameList);
-					break;
-				case 4:
-					effectId = P4Search.getEffectId(targetDependencyIndex, effect, phraseList);
-					if(effectId == -1){ continue; }
-					keyWordId = P4Search.getKeyWordId(phraseId, effectId, phraseList, medicineNameList);
-					break;
-				}
-				
-				if(keyWordId == -1 || phraseId == keyWordId){ continue; }
-				keyWordIdList.add(keyWordId);
+			if(!targetForm.contains(target)){ continue; }
+			//System.out.println("対象" + target);
+			//System.out.println("対象候補" + targetForm);
+			targetDependencyIndex = phraseList.get(phraseId).getDependencyIndex();
+
+			switch(patternType){
+			case 3:
+				effectId = P3Search.getEffectId(targetDependencyIndex, effect, phraseList);
+				if(effectId == -1){ continue; }
+				keyWordId = P3Search.getKeyWordId(phraseId, effectId, phraseList, medicineNameList);
+				break;
+			case 4:
+				effectId = P4Search.getEffectId(targetDependencyIndex, effect, phraseList);
+				if(effectId == -1){ continue; }
+				keyWordId = P4Search.getKeyWordId(phraseId, effectId, phraseList, medicineNameList);
+				break;
 			}
-		}
+
+			if(keyWordId == -1 || phraseId == keyWordId){ continue; }
+			keyWordIdList.add(keyWordId);
+		} 
+
 		return keyWordIdList;
 	}
-	
+
 	public static ArrayList<KeyWord> addKeyWord
 	(ArrayList<KeyWord> keyWordList, ArrayList<Integer> keyWordIdList, ArrayList<Phrase> phraseList, int keyWordIndex){
-		
-		if(keyWordIdList.size() == 0){ return keyWordList; }
-		
-//		for(Phrase phrase : phraseList){
-//			System.out.println(phrase.getPhraseText());
-//		}
+
+		//if(keyWordIdList.size() == 0){ return keyWordList; }
+
+		//		for(Phrase phrase : phraseList){
+		//			System.out.println(phrase.getPhraseText());
+		//		}
 		for(int id : keyWordIdList){
-			
+
 			Phrase phrase = phraseList.get(id);
-			//System.out.println(id);
-			//System.out.println("MorphemeList().get("+keyWordIndex+")" + phrase.getMorphemeList().get(keyWordIndex).getMorphemeText());
-			Morpheme morpheme = phrase.getMorphemeList().get(keyWordIndex);
-			
-			//手がかり語は名詞または動詞とする
-			if(!(morpheme.getPartOfSpeech().equals("名詞") || morpheme.getPartOfSpeech().equals("動詞"))){ continue; }
-			
-			if(!morpheme.getOriginalForm().equals("*")){
-				keyWordList.add(new KeyWord(morpheme.getOriginalForm()));
+			ArrayList<Morpheme> morphemeList = phrase.getMorphemeList();
+
+			//文節の末尾確認
+			if(!(morphemeList.get(morphemeList.size()-1).getPartOfSpeechDetails().contains("格助詞")
+					||morphemeList.get(morphemeList.size()-1).getPartOfSpeechDetails().contains("接続助詞"))){ continue; }
+
+			Morpheme morpheme = morphemeList.get(keyWordIndex);
+
+			//手がかり語の適切性判断
+			if(Logic.properKeyWord(morpheme) == false){ continue; }
+
+			//ゴミ取り
+			String morphemeText = Logic.cleanWord(morpheme.getMorphemeText());
+			if(morphemeText.equals("")){ continue; }
+
+			String morphemeOriginalText = morpheme.getOriginalForm();
+
+			if(!morphemeOriginalText.equals("*")){
+				keyWordList.add(new KeyWord(morphemeOriginalText));
 			}else{
-				keyWordList.add(new KeyWord(morpheme.getMorphemeText()));
+				keyWordList.add(new KeyWord(morphemeText));
 			}
 		}
 		return keyWordList;

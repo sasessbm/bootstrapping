@@ -15,11 +15,15 @@ public class Main {
 	private static ArrayList<String> medicineNameList 
 	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\薬剤名\\medicine_name.txt");
 	
+	private static ArrayList<String> keyWordList = SeedSetter.getKeyWordSeedList();
+	
+	//private static ArrayList<String> keyWordList = SeedSetter.getTestKeyWordSeedList();
+	
 //	private static ArrayList<String> keyWordList 
 //	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_extend.txt");
 	
-	private static ArrayList<String> keyWordList 
-	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_seed.txt");
+//	private static ArrayList<String> keyWordList 
+//	= GetTextFileList.fileRead("C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_seed.txt");
 
 	private static String keyWordIncreaseFilePath 
 	= "C:\\Users\\sase\\Desktop\\実験\\ブートストラップ\\手がかり語\\keyword_increase.txt";
@@ -32,6 +36,8 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		
 		//RunFromTargetSeed.run(medicineNameList);
+		
+		Logic.medicineNameList = medicineNameList;
 		
 		RunFromKeyWordSeed.run(keyWordList, medicineNameList);
 		

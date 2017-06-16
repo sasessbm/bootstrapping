@@ -20,6 +20,7 @@ public class GetTripleSetList {
 			ArrayList<String> keyWordList = new ArrayList<String>();
 			keyWordList.add(keyWord);
 			ArrayList<TripleSetInfo> tripleSetInfoList = SearchElementPhrase.getTripleSetInfoList(phraseReplaceList, keyWordList);
+			if(tripleSetInfoList.size() == 0){ continue; }
 			tripleSetList.addAll(makeTriplicity.GetTripleSetList.getTripleSetList(tripleSetInfoList, phraseRestoreList, medicineNameList));
 		}
 		

@@ -40,7 +40,7 @@ public class RunFromTargetSeed {
 //		idList.add(485);
 
 		//シードセット
-		ArrayList<TripleSet> tripleSetIncreaseList = SeedSetter.getSeedList();
+		ArrayList<TripleSet> tripleSetIncreaseList = SeedSetter.getTripleSetSeedList();
 		ArrayList<String> keyWordTextIncreaseList = new ArrayList<String>();
 		
 		ArrayList<TripleSet> tripleSetIncreaseFinalList = new ArrayList<TripleSet>();
