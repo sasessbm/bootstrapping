@@ -1,6 +1,8 @@
 package bootstrapping;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 import makeTriplicity.*;
 
@@ -8,25 +10,15 @@ public class Logic {
 
 	public static ArrayList<String> medicineNameList;
 
-	//	public static void main(String[] args) throws Exception{
-	//		
-	//		ArrayList<KeyWord> list1 = new ArrayList<KeyWord>();
-	//		list1.add(new KeyWord("あああ"));
-	//		list1.add(new KeyWord("いいい"));
-	//		list1.add(new KeyWord("ううう"));
-	//		list1.add(new KeyWord("ooo"));
-	//		
-	//		ArrayList<KeyWord> list2 = new ArrayList<KeyWord>();
-	//		list2.add(new KeyWord("えええ"));
-	//		list2.add(new KeyWord("あああ"));
-	//		list2.add(new KeyWord("いいい"));
-	//		
-	//		list2 = deleteOverlappingFromList(list2, list1);
-	//		
-	//		for(KeyWord key : list2){
-	//			System.out.println(key.getKeyWordText());
-	//		}
-	//	}
+	public static void main(String[] args) throws Exception{
+
+		ArrayList<Integer> idList = getRandomIdList(100,1,100);
+		for(int id : idList){
+			System.out.println(id);
+		}
+		
+		
+	}
 
 
 	//重複した組を削除
@@ -44,22 +36,22 @@ public class Logic {
 		return removeList;
 	}
 
-//	public static ArrayList<TripleSet> deleteOverlappingFromListForTripleSet
-//	(ArrayList<TripleSet> removeList, ArrayList<TripleSet> compareList){
-//
-//		for(TripleSet tripleSet : compareList){
-//			
-//			String targetBase = tripleSet.getTargetElement().getText();
-//			String effectBase = tripleSet.getEffectElement().getText();
-//			
-//			for(int i = removeList.size() - 1; i >= 0; i--){
-//				if(removeList.get(i).getTargetElement().getText().equals(targetBase) && ){
-//					removeList.remove(i);
-//				}
-//			}
-//		}
-//		return removeList;
-//	}
+	//	public static ArrayList<TripleSet> deleteOverlappingFromListForTripleSet
+	//	(ArrayList<TripleSet> removeList, ArrayList<TripleSet> compareList){
+	//
+	//		for(TripleSet tripleSet : compareList){
+	//			
+	//			String targetBase = tripleSet.getTargetElement().getText();
+	//			String effectBase = tripleSet.getEffectElement().getText();
+	//			
+	//			for(int i = removeList.size() - 1; i >= 0; i--){
+	//				if(removeList.get(i).getTargetElement().getText().equals(targetBase) && ){
+	//					removeList.remove(i);
+	//				}
+	//			}
+	//		}
+	//		return removeList;
+	//	}
 
 	public static ArrayList<KeyWord> deleteOverlappingFromListForString
 	(ArrayList<KeyWord> removeList, ArrayList<String> compareList){
@@ -123,6 +115,36 @@ public class Logic {
 		if(containsMedicine(morpheme.getMorphemeText())){ return false; }
 
 		return true;
+	}
+
+	//ランダムなIDリスト作成
+	public static ArrayList<Integer> getRandomIdList(int idNum, int startRange, int endRange){
+
+		ArrayList<Integer> randomIdList = new ArrayList<Integer>();
+		
+		Random rand = new Random();
+		
+		boolean isCreated;
+		int id = rand.nextInt(endRange + 1 - startRange) + startRange;
+		randomIdList.add(id);
+		//boolean[] randomNumArray = makeRandomNumArray(idNum, startRange, endRange);
+		for(int i=0; i < idNum-1; ){
+			isCreated = false;
+			id = rand.nextInt(endRange + 1 - startRange) + startRange;
+			for(Integer idInList : randomIdList){
+				if(idInList == id){
+					isCreated = true;
+				}
+			}
+			if(!isCreated){
+				randomIdList.add(id);
+				i++;
+			}
+		}
+
+		Collections.sort(randomIdList);
+		return randomIdList;
+
 	}
 
 
