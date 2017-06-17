@@ -72,12 +72,13 @@ public class GetSentence {
 
 		ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
 		ArrayList<String> sentenceTextList = new ArrayList<String>();
+		int sentenceId = 0;
 
 		//レコード単位
 		for(Record record : recordList){
 			String snippetText = record.getSnippet().getSnippetText();
 			String TargetMedicineName = record.getMedicineName();
-			int id = record.getId();
+			int recordId = record.getId();
 			if(!snippetText.contains(TargetMedicineName)){ continue; }  //対象薬剤名が無いスニペットは対象としない
 
 			//SentenceList取得
@@ -119,8 +120,9 @@ public class GetSentence {
 				//薬剤名を戻す
 				phraseRestoreList = PostProcessing.restoreMedicineName(phraseRestoreList, medicineNameMap);
 
+				sentenceId ++;
 				//sentence生成
-				Sentence sentence = new Sentence(sentenceText, id, phraseReplaceList, phraseRestoreList);
+				Sentence sentence = new Sentence(sentenceText, recordId, sentenceId, phraseReplaceList, phraseRestoreList);
 				sentenceList.add(sentence);
 			}
 		}
@@ -130,11 +132,12 @@ public class GetSentence {
 	public static ArrayList<Sentence> makeProperSentenceList(ArrayList<Record> recordList, ArrayList<String> medicineNameList) throws SAXException, IOException, ParserConfigurationException{
 
 		ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
+		int sentenceId = 0;
 
 		for(Record record : recordList){
 			String snippetText = record.getSnippet().getSnippetText();
 			ArrayList<String> sentenceTextCheckList = PreProcessing.getSentenceTextList(snippetText);
-			int id = record.getId();
+			int recordId = record.getId();
 
 			if(sentenceTextCheckList.size() <= 2){ continue; } //3文以上のスニペットを適用
 
@@ -180,9 +183,9 @@ public class GetSentence {
 				}
 				//薬剤名を戻す
 				phraseRestoreList = PostProcessing.restoreMedicineName(phraseRestoreList, medicineNameMap);
-
+				sentenceId++;
 				//sentence生成
-				Sentence sentence = new Sentence(sentenceTextBefore, id, phraseReplaceList, phraseRestoreList);
+				Sentence sentence = new Sentence(sentenceTextBefore, recordId, sentenceId, phraseReplaceList, phraseRestoreList);
 				sentenceList.add(sentence);
 				break; //1レコードから1文とする
 			}

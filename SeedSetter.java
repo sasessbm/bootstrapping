@@ -96,7 +96,6 @@ public class SeedSetter {
 		correctAnswerList.add(new CorrectAnswer(19,0,2,3));
 		
 		return correctAnswerList;
-		
 	}
 	
 	

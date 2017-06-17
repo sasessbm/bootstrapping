@@ -63,10 +63,21 @@ public class Calculator {
 	public static ArrayList<Double> getResultList(int allExtractionNum, int correctExtractionNum, int correctAnswerNum){
 
 		ArrayList<Double> resultList = new ArrayList<Double>();
-		double precision = (double)correctExtractionNum / (double)allExtractionNum;
+		
+		double precision = 0;
 		double recall = (double)correctExtractionNum / (double)correctAnswerNum;
-		double fMeasure = (2 * precision * recall) / (precision + recall);
-
+		double fMeasure = 0;
+		
+		// 1つも三つ組が抽出できなかったら適合率は0
+		if(allExtractionNum != 0){
+			precision = (double)correctExtractionNum / (double)allExtractionNum;
+		}
+		
+		// 0で割るのを防ぐ
+		if((precision + recall) != 0){
+			fMeasure = (2 * precision * recall) / (precision + recall);
+		}
+		
 		resultList.add(roundOff(precision * 100).doubleValue());
 		resultList.add(roundOff(recall * 100).doubleValue());
 		resultList.add(roundOff(fMeasure * 100).doubleValue());

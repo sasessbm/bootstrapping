@@ -12,18 +12,18 @@ public class Logic {
 
 	public static void main(String[] args) throws Exception{
 
-//		ArrayList<Integer> idList = getRandomIdList(100,1,100);
-//		for(int id : idList){
-//			System.out.println(id);
-//		}
-		
+		//		ArrayList<Integer> idList = getRandomIdList(100,1,100);
+		//		for(int id : idList){
+		//			System.out.println(id);
+		//		}
+
 		ArrayList<Integer> usedIdList = new ArrayList<Integer>();
 		usedIdList.add(2);
 		usedIdList.add(3);
 		usedIdList.add(6);
 		usedIdList.add(9);
 		usedIdList.add(12);
-		
+
 		ArrayList<Integer> additionalIdList = getAdditionalRandomIdList(10, 1, 30, usedIdList);
 
 		for(int id : additionalIdList){
@@ -48,22 +48,25 @@ public class Logic {
 		return removeList;
 	}
 
-	//	public static ArrayList<TripleSet> deleteOverlappingFromListForTripleSet
-	//	(ArrayList<TripleSet> removeList, ArrayList<TripleSet> compareList){
-	//
-	//		for(TripleSet tripleSet : compareList){
-	//			
-	//			String targetBase = tripleSet.getTargetElement().getText();
-	//			String effectBase = tripleSet.getEffectElement().getText();
-	//			
-	//			for(int i = removeList.size() - 1; i >= 0; i--){
-	//				if(removeList.get(i).getTargetElement().getText().equals(targetBase) && ){
-	//					removeList.remove(i);
-	//				}
-	//			}
-	//		}
-	//		return removeList;
-	//	}
+	public static ArrayList<TripleSetInfo> deleteOverlappingFromListForTripleSetInfo
+	(ArrayList<TripleSetInfo> removeList, ArrayList<TripleSetInfo> compareList){
+
+		for(TripleSetInfo tripleSetInfo : compareList){
+			int sentenceId = tripleSetInfo.getSentenceId();
+			int medicinePhraseId = tripleSetInfo.getMedicinePhraseId();
+			int targetPhraseId = tripleSetInfo.getTargetPhraseId();
+			int effectPhraseId = tripleSetInfo.getEffectPhraseId();
+
+			for(int i = removeList.size() - 1; i >= 0; i--){
+				TripleSetInfo tSI = removeList.get(i);
+				if(tSI.getSentenceId() == sentenceId && tSI.getMedicinePhraseId() == medicinePhraseId && 
+						tSI.getTargetPhraseId() == targetPhraseId && tSI.getEffectPhraseId() == effectPhraseId){
+					removeList.remove(i);
+				}
+			}
+		}
+		return removeList;
+	}
 
 	public static ArrayList<KeyWord> deleteOverlappingFromListForString
 	(ArrayList<KeyWord> removeList, ArrayList<String> compareList){
@@ -164,11 +167,11 @@ public class Logic {
 		boolean isUsedId = false;
 		boolean isCreated;
 		int id = 0;
-		
+
 		while(true){
 			isUsedId = false;
 			id = rand.nextInt(endIdIndex + 1 - startIdIndex) + startIdIndex;
-			
+
 			for(int usedId : usedIdList){
 				if(id == usedId){
 					isUsedId = true;
@@ -179,25 +182,21 @@ public class Logic {
 				break;
 			}
 		}
-		
 		additionalIdList.add(id);
-
 		for(int i=0; i < idNum-1; ){
 			isCreated = false;
-			
+
 			while(true){
 				isUsedId = false;
 				id = rand.nextInt(endIdIndex + 1 - startIdIndex) + startIdIndex;
-				
+
 				for(int usedId : usedIdList){
 					if(id == usedId){
 						isUsedId = true;
 						break;
 					}
 				}
-				if(!isUsedId){
-					break;
-				}
+				if(!isUsedId){ break; }
 			}
 			for(Integer idInList : additionalIdList){
 				if(idInList == id){
@@ -211,6 +210,35 @@ public class Logic {
 		}
 		Collections.sort(additionalIdList);
 		return additionalIdList;
+	}
+	
+	public static void displayResult(ArrayList<TripleSetInfo> tripleSetInfoList){
+		
+		ArrayList<CorrectAnswer> correctAnswerList = SeedSetter.getCorrectAnswerList();
+		int correctAnswerNum = correctAnswerList.size();
+		int allExtractionNum = tripleSetInfoList.size();
+		int correctExtractionNum = 0;
+		
+		for(TripleSetInfo tripleSetInfo : tripleSetInfoList){
+			int sentenceId = tripleSetInfo.getSentenceId();
+			int medicinePhraseId = tripleSetInfo.getMedicinePhraseId();
+			int targetPhraseId = tripleSetInfo.getTargetPhraseId();
+			int effectPhraseId = tripleSetInfo.getEffectPhraseId();
+			
+			for(CorrectAnswer correctAnswer : correctAnswerList){
+				if(correctAnswer.getSentenceId() == sentenceId && correctAnswer.getMedicinePhraseId() == medicinePhraseId
+						&& correctAnswer.getTargetPhraseId() == targetPhraseId && correctAnswer.getEffectPhraseId() == effectPhraseId){
+					correctExtractionNum ++;
+				}
+			}
+		}
+		
+		ArrayList<Double> resultList = Calculator.getResultList(allExtractionNum, correctExtractionNum, correctAnswerNum);
+		
+		System.out.println("適合率：" + resultList.get(0));
+		System.out.println("再現率：" + resultList.get(1));
+		System.out.println("F値：" + resultList.get(2));
+		
 	}
 
 

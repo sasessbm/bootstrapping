@@ -7,17 +7,18 @@ import makeTriplicity.Phrase;
 public class Sentence {
 	
 	private String text;
-	private int id;
-	//private TreeMap<Integer, String> medicineNameMap;
+	private int recordId;
+	private int sentenceId;
 	private ArrayList<Phrase> phraseReplaceList;
 	private ArrayList<Phrase> phraseRestoreList;
 	
-	public Sentence(String text, int id, ArrayList<Phrase> phraseReplaceList, ArrayList<Phrase> phraseRestoreList){
+	public Sentence
+	(String text, int recordId, int sentenceId, ArrayList<Phrase> phraseReplaceList, ArrayList<Phrase> phraseRestoreList){
 		this.text = text;
-		this.id = id;
+		this.recordId = recordId;
+		this.sentenceId = sentenceId;
 		this.phraseReplaceList = phraseReplaceList;
 		this.phraseRestoreList = phraseRestoreList;
-		//this.medicineNameMap = medicineNameMap;
 	}
 
 	public String getText() {
@@ -28,21 +29,21 @@ public class Sentence {
 		this.text = text;
 	}
 
-	public int getId() {
-		return id;
+	public int getRecordId() {
+		return recordId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setRecordId(int id) {
+		this.recordId = id;
 	}
 	
-//	public TreeMap<Integer, String> getMedecineNameMap(){
-//		return medicineNameMap;
-//	}
-//	
-//	public void setMedicineNameMap(TreeMap<Integer, String> medicineNameMap){
-//		this.medicineNameMap = medicineNameMap;
-//	}
+	public int getSentenceId() {
+		return sentenceId;
+	}
+
+	public void setSentenceId(int sentenceId) {
+		this.sentenceId = sentenceId;
+	}
 
 	public ArrayList<Phrase> getPhraseReplaceList() {
 		return phraseReplaceList;

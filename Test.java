@@ -16,7 +16,7 @@ public class Test {
 		
 		for(Sentence sentence : sentenceList){
 			
-			System.out.println("\r\nID = "+ sentence.getId());
+			System.out.println("\r\nID = "+ sentence.getRecordId());
 			System.out.println(sentence.getText());
 			
 		}

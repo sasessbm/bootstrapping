@@ -17,8 +17,9 @@ public class RunFromKeyWordSeed {
 
 		ArrayList<TripleSet> tripleSetIncreaseFinalList = new ArrayList<TripleSet>();
 		ArrayList<KeyWord> keyWordIncreaseFinalList = new ArrayList<KeyWord>();
+		ArrayList<TripleSetInfo> tripleSetInfoIncreaseFinalList = new ArrayList<TripleSetInfo>();
 
-		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 4000, medicineNameList);
+		ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3001, 3100, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(3500, 4000, medicineNameList);
 		//ArrayList<Sentence> sentenceList = GetSentence.getSentenceList(idList, medicineNameList);
 		
@@ -44,13 +45,15 @@ public class RunFromKeyWordSeed {
 			for(KeyWord keyWord : keyWordIncreaseList){
 				String keyWordText = keyWord.getKeyWordText();
 				System.out.println("\r\n" + keyWordText);
-				//ArrayList<TripleSet> tripleSetTmpList = GetTripleSetList.getTripleSetList(keyWordText, sentenceList, medicineNameList);
-				ArrayList<TripleSet> tripleSetTmpList = GetTripleSetList.getTripleSetList(keyWordText, sentenceList, medicineNameList);
-				if(tripleSetTmpList.size() == 0){ continue; }
-				tripleSetForSearchList.addAll(tripleSetTmpList);
+				ArrayList<TripleSetInfo> tripleSetInfoList = GetTripleSetInfoList.getTripleSetInfoList(sentenceList ,keyWordText);
+				
+				if(tripleSetInfoList.size() == 0){ continue; }
 				
 				//すでに取得しているものは取得しない
-				//tripleSetTmpList = Logic.deleteOverlappingFromListForKey(tripleSetTmpList, tripleSetIncreaseFinalList);
+				tripleSetInfoList = Logic.deleteOverlappingFromListForTripleSetInfo(tripleSetInfoList, tripleSetInfoIncreaseFinalList);
+				tripleSetInfoIncreaseFinalList.addAll(tripleSetInfoList);
+				ArrayList<TripleSet> tripleSetTmpList = GetTripleSetList.getTripleSetList(tripleSetInfoList, sentenceList, medicineNameList);
+				tripleSetForSearchList.addAll(tripleSetTmpList);
 				
 				System.out.println("「"+keyWord.getKeyWordText() + "」から、以下の三つ組を取得");
 				for(TripleSet tripleSet : tripleSetTmpList){
@@ -79,6 +82,7 @@ public class RunFromKeyWordSeed {
 //			}
 
 			System.out.println("\r\n「取得した三つ組のエントロピー計算」");
+			
 			//三つ組のエントロピー計算
 			for(TripleSet tripleSet : tripleSetForSearchList){
 				double entropy = 0;
@@ -184,12 +188,15 @@ public class RunFromKeyWordSeed {
 			keyWordIncreaseFinalList.addAll(keyWordIncreaseList);
 
 			//三つ組最終増加リスト更新
-			tripleSetIncreaseFinalList.addAll(tripleSetIncreaseList);
+			//tripleSetIncreaseFinalList.addAll(tripleSetIncreaseList);
 			
 			//三つ組増加リスト初期化
 			tripleSetIncreaseList.clear();
 		}
-
+		
+		tripleSetIncreaseFinalList 
+					= GetTripleSetList.getTripleSetList(tripleSetInfoIncreaseFinalList, sentenceList, medicineNameList);
+		
 		System.out.println("\r\n獲得結果");
 		
 		System.out.println("\r\n手がかり語");
@@ -202,6 +209,8 @@ public class RunFromKeyWordSeed {
 			System.out.println(tripleSet.getMedicineName()+ " , " + tripleSet.getTargetElement().getText() + " , " 
 					+tripleSet.getEffectElement().getText());
 		}
+		
+		Logic.displayResult(tripleSetInfoIncreaseFinalList);
 
 
 	}
