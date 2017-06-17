@@ -94,7 +94,7 @@ public class RunFromKeyWordSeed {
 				}
 				if(tripleSetAllNum != 0){
 					//System.out.println("tripleSetAllNum・・・" + tripleSetAllNum);
-					entropy = EntropyCalculator.caluculateEntropy(tripleSetNumList, tripleSetAllNum);
+					entropy = Calculator.calculateEntropy(tripleSetNumList, tripleSetAllNum);
 				}
 				System.out.println(tripleSet.getMedicineName()+ " , " + tripleSet.getTargetElement().getText() + " , " 
 						+tripleSet.getEffectElement().getText() +"　→　" + entropy + "　(" + tripleSet.getUsedKeyWord()+")");
@@ -167,7 +167,7 @@ public class RunFromKeyWordSeed {
 				}
 				if(keyWordTextAllNum != 0){
 					//System.out.println("keyWordTextAllNum・・・" + keyWordTextAllNum);
-					entropy = EntropyCalculator.caluculateEntropy(keyWordNumList, keyWordTextAllNum);
+					entropy = Calculator.calculateEntropy(keyWordNumList, keyWordTextAllNum);
 				}
 				System.out.println(keyWordText + "　→　" + entropy);
 

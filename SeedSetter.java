@@ -88,6 +88,18 @@ public class SeedSetter {
 		return seedList;
 		
 	}
+	
+	public static ArrayList<CorrectAnswer> getCorrectAnswerList(){
+		
+		ArrayList<CorrectAnswer> correctAnswerList = new ArrayList<CorrectAnswer>();
+		
+		correctAnswerList.add(new CorrectAnswer(19,0,2,3));
+		
+		return correctAnswerList;
+		
+	}
+	
+	
 
 	public static ArrayList<TripleSet> getTripleSetSeedList(){
 

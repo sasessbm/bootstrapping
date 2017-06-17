@@ -12,7 +12,7 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 		
 		Logic.medicineNameList = medicineNameList;
-		ArrayList<Sentence> sentenceList = GetSentence.getRandomSentenceList(10, 1, 20, medicineNameList);
+		ArrayList<Sentence> sentenceList = GetSentence.getRandomSentenceList(20, 10, 40, medicineNameList);
 		
 		for(Sentence sentence : sentenceList){
 			

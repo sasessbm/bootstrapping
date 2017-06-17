@@ -49,14 +49,16 @@ public class GetSentence {
 		ArrayList<Integer> randomIdList = Logic.getRandomIdList(sentenceNum, startIdIndex, endIdIndex);
 		ArrayList<Record> recordList = GetRecord.getRecordList(randomIdList);
 		ArrayList<Sentence> sentenceList = makeProperSentenceList(recordList, medicineNameList);
+		ArrayList<Integer> usedIdList = randomIdList;
+		ArrayList<Integer> additionalRandomIdList = new ArrayList<Integer>();
 		
 		while(true){
 			int diff = sentenceNum - sentenceList.size();
 			if(diff == 0){ break; }
-
-			ArrayList<Integer> additionalRandomIdList = Logic.getAdditionalRandomIdList(diff, startIdIndex, endIdIndex, randomIdList);
+			additionalRandomIdList = Logic.getAdditionalRandomIdList(diff, startIdIndex, endIdIndex, usedIdList);
 			recordList = GetRecord.getRecordList(additionalRandomIdList);
 			sentenceList.addAll(makeProperSentenceList(recordList, medicineNameList));
+			usedIdList.addAll(additionalRandomIdList);
 		}
 		
 		//Collections.sort(sentenceList.get);
@@ -138,17 +140,21 @@ public class GetSentence {
 
 			for(int i = 0; i < sentenceTextCheckList.size(); i++){
 
-				if(i==0 || i == sentenceTextCheckList.size()){ continue; } //最初と最後以外の文を適用
+				if(i==0 || i == sentenceTextCheckList.size() - 1){ continue; } //最初と最後以外の文を適用
 
 				String sentenceText = sentenceTextCheckList.get(i);
 
 				if(!Logic.containsMedicine(sentenceText)){ continue; } //薬剤名が含まれる文を適用
+				
+				if(sentenceText.contains("......")){ continue; } //文の不自然な区切りを防ぐ
 
 				//前処理
 				sentenceText = PreProcessing.deleteParentheses(sentenceText);	//括弧削除
 				sentenceText = PreProcessing.deleteSpace(sentenceText);	//スペース削除
 
 				if(sentenceText.equals("")){ continue; }	//空白の文は対象としない
+				
+				String sentenceTextBefore = sentenceText;
 
 				TreeMap<Integer, String> medicineNameMap = 
 						PreProcessing.getMedicineNameMap(sentenceText, medicineNameList); //薬剤名取得
@@ -176,7 +182,7 @@ public class GetSentence {
 				phraseRestoreList = PostProcessing.restoreMedicineName(phraseRestoreList, medicineNameMap);
 
 				//sentence生成
-				Sentence sentence = new Sentence(sentenceText, id, phraseReplaceList, phraseRestoreList);
+				Sentence sentence = new Sentence(sentenceTextBefore, id, phraseReplaceList, phraseRestoreList);
 				sentenceList.add(sentence);
 				break; //1レコードから1文とする
 			}

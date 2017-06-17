@@ -101,7 +101,7 @@ public class RunFromTargetSeed {
 					keyWordNumList.add(keyWordTextNum);
 					keyWordTextAllNum += keyWordTextNum;
 				}
-				entropy = EntropyCalculator.caluculateEntropy(keyWordNumList, keyWordTextAllNum);
+				entropy = Calculator.calculateEntropy(keyWordNumList, keyWordTextAllNum);
 				System.out.println(keyWordText + "　→　" + entropy);
 				
 				//閾値以上の手がかり語をリストに追加
@@ -152,7 +152,7 @@ public class RunFromTargetSeed {
 					tripleSetNumList.add(tripleSetNum);
 					tripleSetAllNum += tripleSetNum;
 				}
-				entropy = EntropyCalculator.caluculateEntropy(tripleSetNumList, tripleSetAllNum);
+				entropy = Calculator.calculateEntropy(tripleSetNumList, tripleSetAllNum);
 				System.out.println(tripleSet.getMedicineName()+ " , " + tripleSet.getTargetElement().getText() + " , " 
 						+tripleSet.getEffectElement().getText() +"　→　" + entropy + "　→　" + tripleSet.getUsedKeyWord());
 				
